@@ -1,0 +1,12 @@
+# Исключаем всё
+/*
+# Кроме самого .gitignore (и как следствие всего, что в нём написано)
+!.gitignore
+# Кроме папок и файлов модуля
+!/engine/modules/components/
+!/engine/data/components.php
+!/engine/ajax/components/
+!/engine/inc/components.php
+!/engine/skins/images/components.png
+!/templates/Default/components/
+!/CHANGELOG.md
