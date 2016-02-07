@@ -52,6 +52,7 @@
 		<script src="{$theme}/assets/js/jquery.ladda.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.magnificpopup.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.form.min.js"></script>
+		<script src="{$theme}/assets/js/jquery.mask.min.js"></script>
 		<script src="{$theme}/assets/js/main.js"></script>
 		
 	</body>

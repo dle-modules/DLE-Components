@@ -191,8 +191,7 @@ switch ($currentPage) {
 
 			// Обрабатываем название компонента
 			if (isset($_POST['name']) && strlen(trim($_POST['name'])) > 0) {
-				$postName = htmlspecialchars(strip_tags(trim($_POST['name'])));
-				$postName = preg_replace("/([^a-z0-9_])/i", '', $postName);
+				$postName = $main->leffersFilter($_POST['name']);
 			}
 			if (strlen($postName) == 0) {
 				$arComponentPost['error']          = true;

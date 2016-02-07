@@ -1,13 +1,16 @@
 {extends 'app.tpl'}
 
 {block 'content'}
-	{* {$arResultVars|d} *}
 	<div class="content">
 		<div class="col col-mb-12 col-6">
 			<div class="h3 m0">{$component.name} — Допполя</div>
 		</div>
 		<div class="col col-mb-12 col-6 ta-right">
-			<a href="{$home}&action=addfield&id={$component.id}" class="btn btn-small btn-primry btn-outline"><i class="icon-plus"></i> Добавить допполе</a>
+			<span
+				data-mfp-src="{$config.http_home_url}engine/ajax/components/editfield.php"				
+				data-settings='{ "action": "add", "componentid": "{$component.id}"  }' 
+				class="btn btn-small btn-primry btn-outline btn-field-edit"
+			><i class="icon-plus"></i> Добавить допполе</span>
 		</div>
 	</div>
 
@@ -39,15 +42,11 @@
 				<span 
 					class="btn btn-small btn-outline mt10 btn-field-edit"
 					data-mfp-src="{$config.http_home_url}engine/ajax/components/editfield.php"
-					data-settings='{ "id": "{$arField.id}", "action": "edit" }'
+					data-settings='{ "action": "edit", "componentid": "{$component.id}", "id": "{$arField.id}" }'
 				><i class="icon icon-cog"></i></span>
 			</div>	
-			{* <div class="col col-mb-12">{$arField|d}</div> *}
 		{/foreach}
 	</div> <!-- .content -->
-
-	{* {$fieldsTypes|d} *}
-	{* {$fieldsList|d} *}
 
 {/block}
 

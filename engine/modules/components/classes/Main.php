@@ -207,15 +207,15 @@ class Main {
 	 */
 	public function getFieldsList($componentId = 0) {
 		return $this->db->getAll(
-			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id=?i', 
-			PREFIX . '_components_fields_list', 
+			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id=?i',
+			PREFIX . '_components_fields_list',
 			PREFIX . '_components_fields_types',
 			$componentId
 		);
 	}
 
 	public function getFieldsTypes() {
-		return $this->db->getAll('SELECT * FROM ?n', PREFIX . '_components_fields_types');
+		return $this->db->getInd('type', 'SELECT * FROM ?n', PREFIX . '_components_fields_types');
 	}
 
 	/**
@@ -288,6 +288,49 @@ class Main {
 
 	public function clearMessage() {
 		unset($_SESSION['message'], $_SESSION['message_type']);
+	}
+
+	/**
+	 * Фильтрация ненужных символов в кодах и менах полей,
+	 * которые должны содержать только латиницу и цифры
+	 *
+	 * @param  string $string Строка, из которой нужно вырезать лишнее
+	 * @return string         Очищенная строка
+	 */
+	public function leffersFilter($string = '') {
+		$returnText = htmlspecialchars(strip_tags(trim($string)));
+		return preg_replace("/([^a-z0-9_])/i", '', $returnText);
+	}
+
+	/**
+	 * Фильтрация дефолтного значения допполя
+	 * 
+	 * @param  mixed  $data Данные о дефолтном значении допполя
+	 * @param  string $type Тип допполя
+	 * 
+	 * @return string       Готовая строка для добавления в БД
+	 */
+	public function parseDefaulFieldValue($data = '', $type = '') {
+		if ((!isset($data) || empty($data) || $data == '')) {
+			$strReturn = '';
+		}
+
+		if (is_array($data)) {
+			$strReturn = $this->db->parse('?s', json_encode($data));
+		} else {
+			switch ($type) {
+				case 'INT':
+				case 'NID':
+					$strReturn = $this->db->parse('?i', $data);
+					break;
+				
+				default:
+					$strReturn = $this->db->parse('?s', $data);
+					break;
+			}
+		}
+
+		return $strReturn;
 	}
 
 } // Main

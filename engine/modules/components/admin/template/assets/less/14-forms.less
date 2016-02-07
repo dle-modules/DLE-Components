@@ -5,7 +5,7 @@
 	.input {
 		display: inline-block;
 		height: @inputHeight;
-		padding: 0 20px;
+		padding: 0 10px;
 		position: relative;
 		margin-bottom: @baseLineHeight / 2;
 		color: @textDark;
@@ -24,7 +24,7 @@
 		} // .input:focus
 
 		textarea& {
-			padding: 10px 20px;
+			padding: 10px;
 			height: auto;
 		} // textarea.input
 
@@ -50,7 +50,12 @@
 		&[type="time"] {
 			padding: 0 0 0 20px; // убираем отступы у этих типов полей иначе будет некрасиво.
 		} //.input[type="number"], .input[type="date"], .input[type="time"]
-
+		&[type="date"],
+		&[type="time"] {
+			&::-webkit-inner-spin-button {
+				height: @inputHeight - 2;
+			}
+		}
 		&[type="color"] {
 			padding: 0;
 		} //.input[type="color"]

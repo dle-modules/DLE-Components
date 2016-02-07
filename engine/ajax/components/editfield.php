@@ -110,9 +110,146 @@ if ($currentAction == '') {
 	die('no action');
 }
 
-$currentTemplate = '/ajax/' . $currentAction;
+$currentTemplate = '/ajax/fields/' . $currentAction;
 
 $isPost = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
+
+
+switch ($currentAction) {
+	case 'edit':
+	case 'add':
+
+		// Добавление нового допполя
+		
+		$componentId = (isset($_REQUEST['componentid'])) ? (int) $_REQUEST['componentid'] : 0;
+
+		// Получаем данные указанного компонента
+		$arComponent = $main->db->getRow('SELECT id, name FROM ?n WHERE id = ?i', PREFIX . '_components', $componentId);
+
+		// Выведем ошибку, если компонент не найден
+		if ($arComponent['id'] <= 0) {
+			Arr::set($arResult, 'error', true);
+			Arr::set($arResult, 'errors.componentid', 'ID компонента не указан, или указан несуществующий компонент');
+		} else {
+			Arr::set($arResult, 'component', $arComponent);
+		}
+
+		$arField = $_REQUEST;
+
+		if ($currentAction == 'edit') {
+			$arSelectField = $main->db->getRow(
+				'SELECT * FROM ?n WHERE component_id = ?i AND id=?i',
+				PREFIX . '_components_fields_list',
+				$arComponent['id'],
+				$id
+			);
+			switch ($arSelectField['type']) {
+				case 'LIST':
+				case 'CHK':
+				case 'RAD':
+				case 'CID':
+					$arSelectField['default_value'] = json_decode($arSelectField['default_value'], true);
+					break;
+			}
+		}
+
+		if (!$isPost && $currentAction == 'edit') {
+			$arField = $arSelectField;
+		}
+		if ($isPost && $currentAction == 'edit') {
+			$arField['code'] = $arSelectField['code'];
+			$arField['type'] = $arSelectField['type'];
+		}
+		
+
+		// Получаем все типы полей, имеющиеся в БД.
+		$arFieldsTypes = $main->getFieldsTypes();
+		Arr::set($arResult, 'fieldsTypes', $arFieldsTypes);
+
+		if (!isset($arFieldsTypes[$arField['type']])) {
+			Arr::set($arResult, 'error', true);
+			Arr::set($arResult, 'errors.fieldsTypes', 'Указан несуществующий тип поля');
+		}
+
+		// Фильтруем код поля для занесения в БД
+		$arField['code'] = $main->leffersFilter($arField['code']);
+
+		// Выведем ошибку, если код поля некорректен
+		if ($arField['code'] == '' && (isset($arField['complete']))) {
+			Arr::set($arResult, 'error', true);
+			Arr::set($arResult, 'errors.code', 'Код допполя не указан или содержит недопустимые символы');
+		}
+
+		$isFieldExists = $main->db->getOne('SELECT id FROM ?n WHERE component_id = ?i AND code = ?s', PREFIX . '_components_fields_list', $arComponent['id'], $arField['code']);
+
+		if ($isFieldExists && $currentAction == 'add') {
+			Arr::set($arResult, 'error', true);
+			Arr::set($arResult, 'errors.code', 'Дополнительное поле с таким кодом уже существует в этом компоненте');
+		}
+
+		// Запишем массив для передачи в шаблонизатор
+		Arr::set($arResult, 'arField', $arField);
+		
+		Arr::set($arResult, 'complete', false);
+
+		// Если ошибок нет — запишем даные в БД
+		if (isset($arField['complete']) && !Arr::get($arResult, 'error')) {
+
+
+			$defaultValue = $main->parseDefaulFieldValue($arField['default_value'], $arField['type']);
+
+			$arFieldData = [
+				'component_id'  => $arComponent['id'],
+				'type'          => $arField['type'],
+				'name'          => $arField['name'],
+				'code'          => $arField['code'],
+				'description'   => $arField['description'],
+				'is_required'   => (isset($arField['is_required'])) ? 1 : 0,
+				'is_multiple'   => (isset($arField['is_multiple'])) ? 1 : 0,
+				'default_value' => $defaultValue,
+			];
+			if ($currentAction == 'edit') {
+				$editFieldQuery = 'UPDATE ?n SET name = ?s, description = ?s, is_required = ?s, is_multiple = ?s, default_value = ?p WHERE component_id = ?i AND id = ?i';
+
+				$main->db->query(
+					$editFieldQuery, 
+					PREFIX . '_components_fields_list', 
+					$arFieldData['name'], 
+					$arFieldData['description'], 
+					$arFieldData['is_required'], 
+					$arFieldData['is_multiple'], 
+					$arFieldData['default_value'],
+					$arFieldData['component_id'],
+					$arSelectField['id']
+				);
+
+			} else {
+				$addFieldQuery = 'INSERT INTO ?n (component_id, type, name, code, description, is_required, is_multiple, default_value) values(?i, ?s, ?s, ?s, ?s, ?i, ?i, ?p)';
+				$main->db->query(
+					$addFieldQuery, 
+					PREFIX . '_components_fields_list', 
+					$arFieldData['component_id'], 
+					$arFieldData['type'], 
+					$arFieldData['name'], 
+					$arFieldData['code'], 
+					$arFieldData['description'], 
+					$arFieldData['is_required'], 
+					$arFieldData['is_multiple'], 
+					$arFieldData['default_value']
+				);
+			}
+			
+
+			Arr::set($arResult, 'complete', true);
+		}
+
+
+		break;
+
+	default:
+		die('no action');
+		break;
+}
 
 // Добавляем все ключи массивов, возможных к выводу в шаблоне.
 $arKeys = [];
@@ -120,27 +257,9 @@ foreach ($arResult as $key => $v) {
 	$arKeys[] = $key;
 }
 
-switch ($currentAction) {
-	case 'edit':
-		$arField = $main->db->getRow(
-			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE f.id=?i', 
-			PREFIX . '_components_fields_list', 
-			PREFIX . '_components_fields_types',
-			$id
-		);
-		Arr::set($arResult, 'arField', $arField);
-
-		break;
-	
-	default:
-		die();
-		break;
-}
-
 Arr::set($arResult, 'arResultVars', $arKeys);
 
 unset($arKeys);
-
 
 // Результат обработки шаблона
 try {

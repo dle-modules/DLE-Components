@@ -4,6 +4,9 @@
 	<nav>
 		<ul class="left-nav">
 			<li>
+				<a href="?mod=options&action=options">В админку DLE</a>
+			</li>
+			<li>
 				<a href="{$home}&action=componentslist">Компоненты</a>
 			</li>
 			<li>

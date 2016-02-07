@@ -29,7 +29,7 @@
 							<small>Введите название компонента, на английском языке</small>
 						{/if}
 					</div>
-					<input class="input input-block {if $component.errors.name!}input-error{/if}" type="text" name="name" value="{$component.name}" {if $isEdit}disabled{/if}>
+					<input class="input input-block input-mask-latin {if $component.errors.name!}input-error{/if}" type="text" name="name" value="{$component.name}" {if $isEdit}disabled{/if}>
 				</div>
 				<div class="col col-mb-12 col-6">
 					<div class="h4 mb0 text-primary">Индекс сортировки</div>
