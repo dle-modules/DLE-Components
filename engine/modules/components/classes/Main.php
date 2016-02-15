@@ -320,8 +320,8 @@ class Main {
 		} else {
 			switch ($type) {
 				case 'INT':
-				case 'NID':
-					$strReturn = $this->db->parse('?i', $data);
+				case 'NID':		
+					$strReturn = $this->db->parse('?i', (int)$data);
 					break;
 				
 				default:

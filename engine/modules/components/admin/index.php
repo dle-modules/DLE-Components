@@ -274,15 +274,31 @@ switch ($currentPage) {
 		break;
 }
 
-// Добавляем все ключи массивов, возможных к выводу в шаблоне.
-$arKeys = [];
-foreach ($arResult as $key => $v) {
-	$arKeys[] = $key;
+/**
+ * Добавляем все ключи массивов, возможных к выводу в шаблоне.
+ */
+$arTplVars = [];
+foreach ($arResult as $key => $tplVar) {
+	if (is_array($tplVar)) {
+		foreach ($tplVar as $k => $v) {
+			if (is_array($v)) {
+				foreach ($v as $k_ => $v_) {
+					$arTplVars[$key][$k][$k_] = $k_;
+				}
+			} else {
+				$arTplVars[$key][$k] = $k;
+			}
+		}
+	} else {
+		$arTplVars[$key] = $key;
+	}
 }
 
-Arr::set($arResult, 'arResultVars', $arKeys);
 
-unset($arKeys);
+Arr::set($arResult, 'arTplVars', $arTplVars);
+
+unset($arTplVars);
+
 
 
 // Результат обработки шаблона
