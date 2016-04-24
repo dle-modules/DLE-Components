@@ -18,15 +18,20 @@
 		<link href="{$theme}/assets/css/main.css" rel="stylesheet">
 	</head>
 	<body>
+		<header class="container container-header">
+			<div class="content">
+				<div class="col col-mb-12 col-4 col-dt-3">
+					<a class="logo" href="{$home}">DLE-Components</a>
+				</div>
+				<div class="col col-mb-12 col-8 col-dt-9">
+					{include 'navigation.tpl'}
+				</div>
+			</div>
+		</header>
 		<div class="body-wrapper clearfix">
 			<div class="container container-main">
-				<div class="content">
-					<div class="col col-mb-hide col-hide col-dt-3">
-						<div class="sidebar">
-							{include 'sidebar.tpl'}
-						</div>
-					</div> <!-- .col col-mb-hide col-hide col-dt-3 -->
-					<div class="col col-mb-12 col-dt-9 col-padding-bottom">
+				<div class="content white-box">
+					<div class="col col-mb-12">
 						<div class="breadcrumb"><span class="item">{$config.module.moduleDecription} (v.{$config.module.version})</span></div>
 						{if $.session.message!}
 							{include '/actions/alert.tpl' message=$.session.message type=$.session.message_type}
@@ -40,7 +45,7 @@
 		</div> <!-- .body-wrapper clearfix -->
 		<div class="mobile-nav-wrapper">
 			<div class="mobile-nav">
-				
+				{* в этот блок подсоввывается мобиьная навигация *}
 			</div>
 		</div>
 

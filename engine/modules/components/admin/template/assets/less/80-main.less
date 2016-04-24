@@ -54,20 +54,23 @@
 		}
 	}
 
+/* ==========================================================================
+   HEADER */
+/* ========================================================================== */
+	
+	.container-header {
+		background: @primary;
+		color: @whiteFull;
+	}
+
 
 /* ==========================================================================
    CONTENT */
 /* ========================================================================== */
 	
-	// .component-item {
-	// 	border-top: solid 1px @gray;
-	// 	padding-top: 10px;
-	// 	padding-bottom: 10px;
-
-	// 	&:first-child {
-	// 		border-top: 0;
-	// 	}
-	// }
+	.white-box {
+		background: @whiteFull;
+	}
 
 /* ==========================================================================
    EDITMENU */
@@ -178,13 +181,18 @@
 	.logo {
 		display: block;
 		height: 50px;
-		background: @primary;
-		text-align: center;
 		text-decoration: none;
-		margin: 0 -20px;
-		color: @white;
 		font: 500 18px/50px @sans;
-		border-radius: 0 0 2px 2px;
+		text-decoration: none;
+		color: @whiteFull;
+		padding: 0 20px;
+
+		&:hover,
+		&:focus {
+			text-decoration: none;
+			background: @textLight;
+			color: @white;
+		}
 	}
 	.sidebar {
 		padding: 0 20px;

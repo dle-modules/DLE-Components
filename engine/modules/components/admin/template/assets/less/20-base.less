@@ -11,24 +11,23 @@
 /* ========================================================================== */
 	
 
-html, body {height: 100%;}
-body {
-	height: auto;
-	min-height: 100%;
-	position: relative;
+html{
+	height: 100%;
 }
-@footerHeight: 50px; // footerHeight
 
-.content-w-margin {
-	margin-bottom: @footerHeight;
-	.clearfix;
+body {
+	min-height: 100%;
+
+	.flex-display;
+	.flex-direction(column);
+	
+}
+
+.body-wrapper {
+	.flex(~"1 0 auto");
 }
 .footer-wrapper {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: @footerHeight; // высота футера
+	
 }
 // Прижимем footer к низу окна браузера
 
