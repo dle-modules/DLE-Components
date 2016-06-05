@@ -3345,12 +3345,11 @@ img.mfp-img {
 }
 .top-nav li a {
   display: block;
-  padding: 5px 0;
   -webkit-transition: all ease 0.3s;
   transition: all ease 0.3s;
   text-decoration: none;
   color: #fff;
-  padding: 10px 20px;
+  padding: 12px 20px;
 }
 .top-nav li:hover,
 .top-nav li:focus {
@@ -3670,7 +3669,7 @@ blockquote:after {
 /* ========================================================================== */
 @media (min-width: 991px) {
   .container-main .white-box {
-    min-height: calc(100vh - 42px);
+    min-height: calc(100vh - 46px);
   }
 }
 .white-box {

@@ -1,7 +1,6 @@
 {extends 'app.tpl'}
 
 {block 'content'}
-	{* {$arResultVars|d} *}
 	<div class="content">
 		<div class="col col-mb-12 col-6">
 			<div class="h3 m0">Список компонентов</div>
@@ -34,7 +33,13 @@
 					<div class="col col-mb-12 col-6 col-dt-4 equal">
 						<small class="text-muted">Дополнительные поля:</small>
 						<div>
-							{$item.fields}
+							{if count($item.fields_list) > 0}
+								{foreach $item.fields_list as $field}
+									<div class="fz14">
+										{$field.name} <span class="text-muted">[{$field.code}]</span>
+									</div>
+								{/foreach}
+							{/if}
 						</div>
 					</div>
 					<div class="col col-mb-12 col-6 col-dt-3 equal">

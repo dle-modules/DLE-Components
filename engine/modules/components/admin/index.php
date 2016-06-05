@@ -23,11 +23,6 @@ if ($member_id['user_group'] != '1') {
 	msg('error', $lang['index_denied'], $lang['index_denied']);
 }
 
-/**
- * var array $cConfig
- */
-include ENGINE_DIR . '/data/components_config.php';
-
 require_once ENGINE_DIR . '/modules/components/SplClassLoader.php';
 
 $loader = new SplClassLoader(null, ENGINE_DIR . '/modules/components/classes');
@@ -42,6 +37,7 @@ $output = '';
 $main = new Main('components');
 
 if (Config::get('module.debug')) {
+
 	/**
 	 * Отладка в красивом виде
 	 *
@@ -278,6 +274,12 @@ switch ($currentPage) {
 		Arr::set($arResult, 'fieldsTypes', $main->getFieldsTypes());
 
 		break;
+	
+	case 'config':
+		Arr::set($arResult, 'arConfig', Config::get('module'));
+
+		break;
+
 	default:
 		// code...
 		break;

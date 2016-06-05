@@ -195,8 +195,10 @@ class Main {
 		$select = "SELECT ?p FROM ?n ?p LIMIT ?i, ?i";
 		// Выполняем запрос на получение элементов
 		$arList['items'] = $this->db->getAll($select, $fields, $table, $where, $start, $perPage);
+		
 		// Выполняем запрос на получения счётчика всех элементов
 		$arList['count'] = $this->db->getOne('SELECT COUNT(*) as count FROM ?n ?p', $table, $where);
+
 
 		// Возвращаем массив с данными
 		return $arList;
@@ -211,7 +213,25 @@ class Main {
 	 * @return array
 	 */
 	public function getComponentsList($currentPage = 0, $perPage = 10) {
-		return $arList = $this->getList(PREFIX . '_components', '*', [], $currentPage, $perPage, 'ASC', 'sort_index');
+
+		$compIds = $arList = [];
+
+		$_arList = $this->getList(PREFIX . '_components', '*', [], $currentPage, $perPage, 'ASC', 'sort_index');
+
+		foreach ($_arList['items'] as $key => $item) {
+			$compIds[] = $item['id'];
+			$arList['items'][$item['id']] = $item;
+		}
+
+		$arFields = $this->db->getAll('SELECT id, component_id, name, code FROM ?p WHERE component_id IN(?a)', PREFIX . '_components_fields_list', $compIds);
+
+		foreach ($arFields as $key => $field) {
+			$arList['items'][$field['component_id']]['fields_list'][] = $field;
+		}
+
+		unset($compIds, $arFields, $_arList);
+		return $arList;
+
 	}
 
 	public function getComponentElements($componentName = '', $currentPage = 0, $perPage = 10) {
