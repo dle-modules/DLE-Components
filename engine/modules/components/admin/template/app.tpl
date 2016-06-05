@@ -7,23 +7,20 @@
 
 		<title>{$config.module.moduleName}</title>
 
-		{Action::run('getCss')}
 	    {* ! https://github.com/bdadam/OptimizedWebfontLoading *} 
 		<script>
 			{ignore} 
 			function loadFont(t,e,n,o){function a(){if(!window.FontFace)return!1;var t=new FontFace("t",'url("data:application/font-woff2,") format("woff2")',{}),e=t.load();try{e.then(null,function(){})}catch(n){}return"loading"===t.status}var r=navigator.userAgent,s=!window.addEventListener||r.match(/(Android (2|3|4.0|4.1|4.2|4.3))|(Opera (Mini|Mobi))/)&&!r.match(/Chrome/);if(!s){var i={};try{i=localStorage||{}}catch(c){}var d="x-font-"+t,l=d+"url",u=d+"css",f=i[l],h=i[u],p=document.createElement("style");if(p.rel="stylesheet",document.head.appendChild(p),!h||f!==e&&f!==n){var w=n&&a()?n:e,m=new XMLHttpRequest;m.open("GET",w),m.onload=function(){m.status>=200&&m.status<400&&(i[l]=w,i[u]=m.responseText,o||(p.textContent=m.responseText))},m.send()}else p.textContent=h}} 
 			{/ignore}
-		loadFont('OpenSans', '{$theme}/assets/fonts/opensans.css', '{$theme}/assets/fonts/opensans-woff2.css');</script>
+			loadFont('OpenSans', '{$theme}/assets/fonts/opensans.css', '{$theme}/assets/fonts/opensans-woff2.css');
+		</script>
 
 		<link href="{$theme}/assets/css/main.css" rel="stylesheet">
 	</head>
 	<body>
 		<header class="container container-header">
 			<div class="content">
-				<div class="col col-mb-12 col-4 col-dt-3">
-					<a class="logo" href="{$home}">DLE-Components</a>
-				</div>
-				<div class="col col-mb-12 col-8 col-dt-9">
+				<div class="col col-mb-12">
 					{include 'navigation.tpl'}
 				</div>
 			</div>

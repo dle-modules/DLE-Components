@@ -12,11 +12,17 @@ email:   pafnuty10@gmail.com
 
 /**
  * Основной класс
+ * @property Fenom tpl
  */
 class Main {
 
 	public $db;
 
+	/**
+	 * Main constructor.
+	 *
+	 * @param string $moduleName
+	 */
 	function __construct($moduleName = '') {
 		// Инициализация конфига
 		Config::init($moduleName);
@@ -32,6 +38,9 @@ class Main {
 		]);
 	}
 
+	/**
+	 * @param array $params
+	 */
 	public function getTemplater($params = []) {
 		$templatePath = (isset($params['templatePath'])) ? $params['templatePath'] : ROOT_DIR . '/templates/' . Config::get('dle.skin') . '/';
 		$cachePath    = (isset($params['cachePath'])) ? $params['cachePath'] : ENGINE_DIR . '/cache/';
@@ -79,37 +88,37 @@ class Main {
 		// Добавляем свой модификатор в шаблонизатор для корректного вывода аватарки юзера по его фотке
 		$this->tpl->addModifier(
 			'avatar', function ($foto) use ($config) {
-				return bpModifiers::getAvatar($foto, $config['http_home_url']);
-			}
+			return bpModifiers::getAvatar($foto, $config['http_home_url']);
+		}
 		);
 
 		// Добавляем свой модификатор в шаблонизатор для ограничения кол-ва символов в тексте
 		$this->tpl->addModifier(
 			'limit', function ($data, $limit, $etc = '&hellip;', $wordcut = false) use ($config) {
-				return bpModifiers::textLimit($data, $limit, $etc, $wordcut, $config['charset']);
-			}
+			return bpModifiers::textLimit($data, $limit, $etc, $wordcut, $config['charset']);
+		}
 		);
 
 		// Добавляем свой модификатор в шаблонизатор для вывода print_r
 		$this->tpl->addModifier(
 			'dump', function ($data) {
-				return bpModifiers::dump($data);
-			}
+			return bpModifiers::dump($data);
+		}
 		);
 
 		// Добавляем свой модификатор в шаблонизатор для вывода картинок
 		$this->tpl->addModifier(
 			'declination', function ($n, $word) {
-				return bpModifiers::declinationWords($n, $word);
-			}
+			return bpModifiers::declinationWords($n, $word);
+		}
 		);
 
 		// Добавляем свой модификатор в шаблонизатор для вывода форматированной даты
-		$this->tpl->addModifier(
+		/*$this->tpl->addModifier(
 			'dateformat', function ($data, $_f = false) {
 				return formateDate($data, $_f);
 			}
-		);
+		);*/
 
 		unset($config);
 	}
@@ -119,9 +128,10 @@ class Main {
 	 *
 	 * Пример задания фильтра:
 	 * $filter = [
-	 * 		'time_create'    => '>= || ADDDATE(NOW(), INTERVAL - 30 DAY)', // `create_time` >= 'ADDDATE(NOW(), INTERVAL - 30 DAY)'
-	 * 		'views'          => '>=||1', // `views` > '1'
-	 * 	];
+	 *        'time_create'    => '>= || ADDDATE(NOW(), INTERVAL - 30 DAY)', // `create_time` >= 'ADDDATE(NOW(),
+	 *        INTERVAL - 30 DAY)'
+	 *        'views'          => '>=||1', // `views` > '1'
+	 *    ];
 	 *
 	 * @param  string       $table      Имя таблицы, из которой будем отбирать данные
 	 * @param  string       $fields     Поля, выбираемые из БД
@@ -130,11 +140,20 @@ class Main {
 	 * @param  integer      $perPage    Кол-во элементов, выводимых на страницу
 	 * @param  string|array $order      Направление сортировки
 	 * @param  string|array $orderField поле, по которому будем сортировать
-	 * @param  array        $search     Поля для поиска и текст, который нужно искать: ['fields'=>['field1','field2'], 'text'=>'искомый текст']
+	 * @param  array        $search     Поля для поиска и текст, который нужно искать: ['fields'=>['field1','field2'],
+	 *                                  'text'=>'искомый текст']
 	 *
 	 * @return array Массив с результатами и количеством элеметнов в таблице
 	 */
-	public function getList($table = 'dle_components', $fields = '*', $filter = [], $pageNum = 0, $perPage = 10, $order = 'ASC', $orderField = 'id', $search = []
+	public function getList(
+		$table = 'dle_components',
+		$fields = '*',
+		$filter = [],
+		$pageNum = 0,
+		$perPage = 10,
+		$order = 'ASC',
+		$orderField = 'id',
+		$search = []
 	) {
 		// Имя таблицы в БД
 
@@ -203,6 +222,7 @@ class Main {
 	 * Получаем список полей компонента
 	 *
 	 * @param  integer $componentId ID компонента.
+	 *
 	 * @return array                Поля компонента.
 	 */
 	public function getFieldsList($componentId = 0) {
@@ -252,6 +272,8 @@ class Main {
 	 * Добавляем новую таблицу в БД
 	 *
 	 * @param string $name Название компонента
+	 *
+	 * @return FALSE|resource
 	 */
 	public function addComponentTable($name = '') {
 		$queryText = "CREATE TABLE `" . PREFIX . "_component_" . $name . "` (
@@ -272,7 +294,7 @@ class Main {
 		try {
 			return $this->db->query($queryText);
 		} catch (Exception $e) {
-			$e->getMessage();
+			return $e->getMessage();
 		}
 	}
 
@@ -295,24 +317,26 @@ class Main {
 	 * которые должны содержать только латиницу и цифры
 	 *
 	 * @param  string $string Строка, из которой нужно вырезать лишнее
+	 *
 	 * @return string         Очищенная строка
 	 */
 	public function leffersFilter($string = '') {
 		$returnText = htmlspecialchars(strip_tags(trim($string)));
+
 		return preg_replace("/([^a-z0-9_])/i", '', $returnText);
 	}
 
 	/**
 	 * Фильтрация дефолтного значения допполя
-	 * 
+	 *
 	 * @param  mixed  $data Данные о дефолтном значении допполя
 	 * @param  string $type Тип допполя
-	 * 
+	 *
 	 * @return string       Готовая строка для добавления в БД
 	 */
 	public function parseDefaulFieldValue($data = '', $type = '') {
 		if ((!isset($data) || empty($data) || $data == '')) {
-			$strReturn = '';
+			return '';
 		}
 
 		if (is_array($data)) {
@@ -320,10 +344,10 @@ class Main {
 		} else {
 			switch ($type) {
 				case 'INT':
-				case 'NID':		
+				case 'NID':
 					$strReturn = $this->db->parse('?i', (int)$data);
 					break;
-				
+
 				default:
 					$strReturn = $this->db->parse('?s', $data);
 					break;

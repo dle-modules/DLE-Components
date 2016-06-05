@@ -41,7 +41,15 @@ class Builder {
 	 *
 	 * @return array Массив с результатами и количеством элеметнов в таблице
 	 */
-	public function getList($table = 'dle_components', $fields = '*', $filter = [], $pageNum = 0, $perPage = 10, $order = 'ASC', $orderField = 'create_time', $search = []
+	/*public function getList(
+		$table = 'dle_components',
+		$fields = '*',
+		$filter = [],
+		$pageNum = 0,
+		$perPage = 10,
+		$order = 'ASC',
+		$orderField = 'create_time',
+		$search = []
 	) {
 		// Имя таблицы в БД
 
@@ -88,6 +96,6 @@ class Builder {
 
 		// Возвращаем массив с данными
 		return $arList;
-	}
+	}*/
 
 }

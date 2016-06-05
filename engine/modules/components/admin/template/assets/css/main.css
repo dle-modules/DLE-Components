@@ -1627,7 +1627,7 @@ fieldset[disabled] .btn-link:focus {
 /* Character Mapping Method */
 [data-icon]:before {
   display: inline-block;
-  font-family: "feather";
+  font-family: "feather", serif;
   content: attr(data-icon);
   font-style: normal;
   font-weight: normal;
@@ -3332,33 +3332,6 @@ img.mfp-img {
 /* ==========================================================================
    top-NAV */
 /* ========================================================================== */
-.top-nav-block {
-  margin: 20px -20px;
-  padding: 20px;
-  background: #3d4b64;
-  color: #fbfdff;
-  border-radius: 2px;
-}
-@media (max-width: 768px) {
-  .top-nav-block {
-    margin-top: 10px;
-  }
-}
-@media (min-width: 768px) and (max-width: 991px) {
-  .top-nav-block {
-    margin-top: 20px;
-  }
-}
-@media (min-width: 992px) and (max-width: 1279px) {
-  .top-nav-block {
-    margin-top: 30px;
-  }
-}
-@media (min-width: 1280px) {
-  .top-nav-block {
-    margin-top: 40px;
-  }
-}
 .top-nav,
 .top-nav ul {
   margin: 0;
@@ -3366,30 +3339,27 @@ img.mfp-img {
   list-style: none;
 }
 .top-nav li {
-  font-size: 18px;
-  border-top: solid 1px #506384;
-}
-.top-nav li:first-child {
-  border-top: 0;
-}
-.top-nav li li {
   font-size: 16px;
-}
-.top-nav li li,
-.top-nav li li:first-child {
-  border-top: solid 1px #475774;
-}
-.top-nav li li a {
-  padding-left: 20px;
+  padding-left: 0;
+  padding-right: 0;
 }
 .top-nav li a {
   display: block;
   padding: 5px 0;
   -webkit-transition: all ease 0.3s;
   transition: all ease 0.3s;
-}
-.top-nav li a:hover {
   text-decoration: none;
+  color: #fff;
+  padding: 10px 20px;
+}
+.top-nav li:hover,
+.top-nav li:focus {
+  background: #3d4b64;
+}
+.top-nav li:hover a,
+.top-nav li:focus a {
+  text-decoration: none;
+  color: #fbfdff;
 }
 .top-nav li.active > a {
   color: #fed766;
@@ -3698,6 +3668,11 @@ blockquote:after {
 /* ==========================================================================
    CONTENT */
 /* ========================================================================== */
+@media (min-width: 991px) {
+  .container-main .white-box {
+    min-height: calc(100vh - 42px);
+  }
+}
 .white-box {
   background: #fff;
 }

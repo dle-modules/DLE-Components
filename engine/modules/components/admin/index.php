@@ -10,6 +10,12 @@ email:   pafnuty10@gmail.com
 =============================================================================
  */
 
+/**
+ * @global array $member_id  Массив с информацией о авторизованном пользователе, включая всю его информацию из профиля.
+ * @global array $user_group Информация о всех группах пользователей и их настройках.
+ * @global array $lang       Массив содержащий текст из языкового пакета.
+ */
+
 if (!defined('DATALIFEENGINE') OR !defined('LOGGED_IN')) {
 	die('Hacking attempt!');
 }
@@ -67,11 +73,11 @@ $main->getTemplater($arTplParams);
 $arResult = [];
 
 // Текущая страница постраничной навигации, на основе $_GET['page']
-$curPageNum = (isset($_GET['page']) && (int) $_GET['page'] > 0) ? (int) $_GET['page'] : false;
+$curPageNum = (isset($_GET['page']) && (int)$_GET['page'] > 0) ? (int)$_GET['page'] : false;
 
 // $curPage = (!empty($_SERVER['HTTPS'])) ? "https://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] : "http://" . $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 
-$CurrenPagerUrl = Url::removeQueryString(Url::getCurrent(), 'page');
+$CurrentPagerUrl = Url::removeQueryString(Url::getCurrent(), 'page');
 
 $pagerConfig = [
 	// 'total_items'    => 150, // определяем кол-во там, где это требуется и если есть - дёргаем сам класс (см ниже)
@@ -79,14 +85,14 @@ $pagerConfig = [
 	'style'            => Config::get('module.navStyle'),
 	'current_page'     => $curPageNum,
 	'query_string'     => 'page',
-	'link_tag'         => '<a class="btn btn-pager" href="' . $CurrenPagerUrl . '&page=:link">:name</a>',
+	'link_tag'         => '<a class="btn btn-pager" href="' . $CurrentPagerUrl . '&page=:link">:name</a>',
 	'current_tag'      => '<span class="btn btn-pager active">:name</span>',
-	'prev_tag'         => '<a href="' . $CurrenPagerUrl . '&page=:link" class="btn btn-pager prev">&lsaquo; назад</a>',
+	'prev_tag'         => '<a href="' . $CurrentPagerUrl . '&page=:link" class="btn btn-pager prev">&lsaquo; назад</a>',
 	'prev_text_tag'    => '<span class="btn btn-pager prev">&lsaquo; назад</span>',
-	'next_tag'         => '<a href="' . $CurrenPagerUrl . '&page=:link" class="btn btn-pager next">вперёд &rsaquo;</a>',
+	'next_tag'         => '<a href="' . $CurrentPagerUrl . '&page=:link" class="btn btn-pager next">вперёд &rsaquo;</a>',
 	'next_text_tag'    => '<span class="btn btn-pager next">вперёд &rsaquo;</span>',
-	'first_tag'        => '<a href="' . $CurrenPagerUrl . '&page=:link" class="btn btn-pager first">&laquo; в начало</a>',
-	'last_tag'         => '<a href="' . $CurrenPagerUrl . '&page=:link" class="btn btn-pager last">в конец &raquo;</a>',
+	'first_tag'        => '<a href="' . $CurrentPagerUrl . '&page=:link" class="btn btn-pager first">&laquo; в начало</a>',
+	'last_tag'         => '<a href="' . $CurrentPagerUrl . '&page=:link" class="btn btn-pager last">в конец &raquo;</a>',
 	'extended_pageof'  => 'Страница :current_page из :total_pages',
 	'extended_itemsof' => 'Показаны вопросы :current_first_item &mdash; :current_last_item из :total_items',
 ];
@@ -104,7 +110,7 @@ $currentTemplate = '/pages/' . $currentPage;
 
 $isPost = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
-$componentId = (isset($_GET['id'])) ? (int) $_GET['id'] : 0;
+$componentId = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
 
 switch ($currentPage) {
 	case 'componentslist':
@@ -151,7 +157,7 @@ switch ($currentPage) {
 			'success'      => 0,
 		];
 
-		if ($_REQUEST['action'] == 'editcomponent' && isset($_REQUEST['id']) && (int) $_REQUEST['id'] > 0) {
+		if ($_REQUEST['action'] == 'editcomponent' && isset($_REQUEST['id']) && (int)$_REQUEST['id'] > 0) {
 			$isEdit = true;
 			if ($componentId > 0) {
 				$arComponent = $main->db->getRow('SELECT * FROM ?n WHERE id = ?i', PREFIX . '_components', $componentId);
@@ -177,8 +183,10 @@ switch ($currentPage) {
 			$main->redirect(Arr::get($arResult, 'home') . '&action=componentslist', 'error', 'Некорректно задан ID компонента');
 		}
 
-		$selectegReadGroups  = (isset($_POST['read_access'])) ? $_POST['read_access'] : ((isset($arComponentPost['read_access'])) ? explode(',', $arComponentPost['read_access']) : []);
-		$selectegWriteGroups = (isset($_POST['write_access'])) ? $_POST['write_access'] : ((isset($arComponentPost['write_access'])) ? explode(',', $arComponentPost['write_access']) : []);
+		$selectegReadGroups  = (isset($_POST['read_access'])) ? $_POST['read_access']
+			: ((isset($arComponentPost['read_access'])) ? explode(',', $arComponentPost['read_access']) : []);
+		$selectegWriteGroups = (isset($_POST['write_access'])) ? $_POST['write_access']
+			: ((isset($arComponentPost['write_access'])) ? explode(',', $arComponentPost['write_access']) : []);
 
 		$arComponentPost['read_access']  = implode(',', $selectegReadGroups);
 		$arComponentPost['write_access'] = implode(',', $selectegWriteGroups);
@@ -187,6 +195,7 @@ switch ($currentPage) {
 		Arr::set($arResult, 'selectedWriteGroups', $selectegWriteGroups);
 
 		if ($isPost) {
+			/** @var array $arComponent */
 			$postName = ($isEdit) ? $arComponent['name'] : '';
 
 			// Обрабатываем название компонента
@@ -208,8 +217,8 @@ switch ($currentPage) {
 
 			$arComponentPost['name'] = $postName;
 
-			if (isset($_POST['sort_index']) && (int) $_POST['sort_index'] > 0) {
-				$arComponentPost['sort_index'] = (int) $_POST['sort_index'];
+			if (isset($_POST['sort_index']) && (int)$_POST['sort_index'] > 0) {
+				$arComponentPost['sort_index'] = (int)$_POST['sort_index'];
 			}
 
 			if (isset($_POST['description']) && strlen(trim($_POST['description'])) > 0) {
@@ -298,7 +307,6 @@ foreach ($arResult as $key => $tplVar) {
 Arr::set($arResult, 'arTplVars', $arTplVars);
 
 unset($arTplVars);
-
 
 
 // Результат обработки шаблона
