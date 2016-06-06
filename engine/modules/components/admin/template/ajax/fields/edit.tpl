@@ -94,10 +94,13 @@
 				</div>
 			
 			
-				<div class="content col-margin-top">
-					<div class="col col-mb-12">
+				<div class="content col-margin-top col-all-middle">
+					<div class="col col-mb-12 col-8">
 						<button class="btn btn-big ladda-button mr10" type="submit" data-style="zoom-in"><span class="ladda-label">Сохранить</span></button>
 						<span class="btn btn-big btn-link modal-dismiss">Отменить</span>
+					</div>
+					<div class="col col-mb-12 col-4 ta-right">
+						<span class="btn btn-secondary btn-outline btn-delete-field">Удалить допполе</span>
 					</div>
 				</div> 	
 			</div> <!-- .cn-modal-content clearfix --> <!-- .cn-modal -->

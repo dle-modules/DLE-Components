@@ -1,6 +1,7 @@
 {extends 'app.tpl'}
 
 {block 'content'}
+	{* <pre>{$arTplVars|dump}</pre> *}
 	<div class="content">
 		<div class="col col-mb-12 col-6">
 			<div class="h3 m0">Список компонентов</div>
@@ -47,14 +48,26 @@
 						<div class="fz14">
 							Чтение: 
 							{if $item.read_access}
-								{$item.read_access}
+								{set $_arReadGroups = $item.read_access|split}
+								{set $arReadGroups = []}
+								{foreach $_arReadGroups as $groupId}
+
+									{set $arReadGroups[] = $arUserGroups[$groupId]['group_name']}
+									
+								{/foreach}
+								{$arReadGroups|join:', '}
 							{else}
 								Все
 							{/if}
 							<br>
 							Запись: 
 							{if $item.write_access}
-								{$item.write_access}
+								{set $_arWriteGroups = $item.write_access|split}
+								{set $arWriteGroups = []}
+								{foreach $_arWriteGroups as $groupId}
+									{set $arWriteGroups[] = $arUserGroups[$groupId]['group_name']}
+								{/foreach}
+								{$arWriteGroups|join:', '}
 							{else}
 								Никто
 							{/if}

@@ -82,6 +82,7 @@ Arr::set($arResult, 'config', Config::getConfig());
 Arr::set($arResult, 'theme', '/engine/modules/components/admin/template');
 Arr::set($arResult, 'home', $PHP_SELF . '?mod=components');
 Arr::set($arResult, 'pagerConfig', $pagerConfig);
+Arr::set($arResult, 'arUserGroups', $user_group);
 
 // Определяемся с шаблоном для отображения
 $currentPage = (isset($_REQUEST['action'])) ? $_GET['action'] : 'index';
@@ -235,8 +236,6 @@ switch ($currentPage) {
 			}
 
 		}
-
-		Arr::set($arResult, 'arUserGroups', $user_group);
 
 		Arr::set($arResult, 'component', $arComponentPost);
 

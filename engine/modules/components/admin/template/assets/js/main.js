@@ -112,6 +112,15 @@ $(document)
 	.on('click', '.btn-location-reload', function(event) {
 		event.preventDefault();
 		location.reload();
+	})
+	.on('click', '.btn-delete-field', function() {
+		var $this = $(this),
+			$form = $this.closest('[data-ajax-submit]');
+
+		var confirmDelete = confirm('Вы действительно хотите удалить это допполе? Действие нельзя будет отменить!');
+		if (confirmDelete) {
+			$form.find('[name="action"]').val('delete').end().trigger('submit');
+		}
 	});
 
 

@@ -253,6 +253,37 @@ switch ($currentAction) {
 
 		break;
 
+	case 'delete':
+		// Добавление нового допполя
+
+		$componentId = (isset($_REQUEST['componentid'])) ? (int)$_REQUEST['componentid'] : 0;
+
+		// Получаем данные указанного компонента
+		$arComponent = $main->db->getRow('SELECT id, name FROM ?n WHERE id = ?i', PREFIX . '_components', $componentId);
+
+		// Выведем ошибку, если компонент не найден
+		if ($arComponent['id'] <= 0) {
+			Arr::set($arResult, 'error', true);
+			Arr::set($arResult, 'errors.componentid', 'ID компонента не указан, или указан несуществующий компонент');
+		} else {
+
+			$arField = $_REQUEST;
+
+			// Запишем массив для передачи в шаблонизатор
+			Arr::set($arResult, 'arField', $arField);
+
+			$isFieldExists = $main->db->getRow('SELECT id, code FROM ?n WHERE component_id = ?i AND id = ?i', PREFIX . '_components_fields_list', $arComponent['id'], $arField['id']);
+
+			if ($isFieldExists['id']) {
+				$main->db->query('DELETE FROM ?n WHERE component_id = ?i AND id = ?i', PREFIX . '_components_fields_list', $arComponent['id'], $isFieldExists['id']);
+			} else {
+				Arr::set($arResult, 'error', true);
+				Arr::set($arResult, 'errors.code', 'Такого поля не существует в этом компоненте');
+			}
+		}
+
+
+		break;
 	default:
 		die('no action');
 		break;
