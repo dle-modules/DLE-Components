@@ -1,4 +1,5 @@
 <?php
+
 /*
 =============================================================================
 BASE - базовый класс для модулей
@@ -48,14 +49,19 @@ class bpModifiers extends Main {
 	 */
 	public static function declinationWords($n = 0, $words) {
 		$words = explode('|', $words);
-		$n     = abs((int) $n); // abs на случай отрицательного значения
-		return $n % 10 == 1 && $n % 100 != 11 ? $words[0] . $words[1] : ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? $words[0] . $words[2] : $words[0] . $words[3]);
+		$n     = abs((int)$n); // abs на случай отрицательного значения
+		return $n % 10 == 1 && $n % 100 != 11
+			? $words[0] . $words[1]
+			: ($n % 10 >= 2 && $n % 10 <= 4 && ($n % 100 < 10 || $n % 100 >= 20) ? $words[0] . $words[2]
+				: $words[0] . $words[3]);
 
 	}
 
 	/**
 	 * Функция для вывода print_r в шаблон
-	 * @param  mixed     $var входящие данные]
+	 *
+	 * @param  mixed $var входящие данные]
+	 *
 	 * @return string    print_r
 	 */
 	public static function dump($var) {
@@ -64,6 +70,7 @@ class bpModifiers extends Main {
 
 	/**
 	 * Тег постраничной навигации
+	 *
 	 * @param  array $config конфиг
 	 * @param  int   $total  Общее кол-во страниц
 	 *
@@ -80,13 +87,14 @@ class bpModifiers extends Main {
 			// Сформированный блок с постраничкой
 			$pages = $pagination->render();
 		}
+
 		return $pages;
 	}
 
 	/**
 	 * Получаем аватар пользователя
 	 *
-	 * @param  string $foto фото пользователя
+	 * @param  string $foto          фото пользователя
 	 *
 	 * @param string  $http_home_url домен
 	 *
@@ -124,7 +132,7 @@ class bpModifiers extends Main {
 	public static function banner($name = '') {
 		$db = DbClass::init();
 		global $member_id;
-		
+
 		$banner = $db->getRow('SELECT * FROM ?n WHERE banner_tag = ?s AND approve', PREFIX . '_banners', $name);
 
 		if ($banner['id']) {
@@ -136,6 +144,7 @@ class bpModifiers extends Main {
 					return false;
 				}
 			}
+
 			return $banner['code'];
 
 		}

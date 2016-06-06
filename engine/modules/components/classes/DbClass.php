@@ -21,6 +21,7 @@ class DbClass extends SafeMySQL {
 		if (!is_object($db)) {
 			$db = new DbClass($options);
 		}
+
 		return $db;
 	}
 }

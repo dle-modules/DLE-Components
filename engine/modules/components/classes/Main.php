@@ -42,7 +42,8 @@ class Main {
 	 * @param array $params
 	 */
 	public function getTemplater($params = []) {
-		$templatePath = (isset($params['templatePath'])) ? $params['templatePath'] : ROOT_DIR . '/templates/' . Config::get('dle.skin') . '/';
+		$templatePath = (isset($params['templatePath'])) ? $params['templatePath']
+			: ROOT_DIR . '/templates/' . Config::get('dle.skin') . '/';
 		$cachePath    = (isset($params['cachePath'])) ? $params['cachePath'] : ENGINE_DIR . '/cache/';
 
 		unset($params['templatePath'], $params['cachePath']);
@@ -195,7 +196,7 @@ class Main {
 		$select = "SELECT ?p FROM ?n ?p LIMIT ?i, ?i";
 		// Выполняем запрос на получение элементов
 		$arList['items'] = $this->db->getAll($select, $fields, $table, $where, $start, $perPage);
-		
+
 		// Выполняем запрос на получения счётчика всех элементов
 		$arList['count'] = $this->db->getOne('SELECT COUNT(*) as count FROM ?n ?p', $table, $where);
 
@@ -219,7 +220,7 @@ class Main {
 		$_arList = $this->getList(PREFIX . '_components', '*', [], $currentPage, $perPage, 'ASC', 'sort_index');
 
 		foreach ($_arList['items'] as $key => $item) {
-			$compIds[] = $item['id'];
+			$compIds[]                    = $item['id'];
 			$arList['items'][$item['id']] = $item;
 		}
 
@@ -230,6 +231,7 @@ class Main {
 		}
 
 		unset($compIds, $arFields, $_arList);
+
 		return $arList;
 
 	}

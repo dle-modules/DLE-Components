@@ -10,6 +10,12 @@ email:   pafnuty10@gmail.com
 =============================================================================
  */
 
+/**
+ * @global array $member_id  Массив с информацией о авторизованном пользователе, включая всю его информацию из профиля.
+ * @global array $user_group Информация о всех группах пользователей и их настройках.
+ * @global array $lang       Массив содержащий текст из языкового пакета.
+ */
+
 // Всякие обязательные штуки для ajax DLE
 @error_reporting(E_ALL ^ E_WARNING ^ E_NOTICE);
 @ini_set('display_errors', true);
@@ -21,7 +27,7 @@ define('ROOT_DIR', substr(dirname(__FILE__), 0, -23));
 define('ENGINE_DIR', ROOT_DIR . '/engine');
 
 /* Базовую проверку независимую от движка лучше проводить перед подключением файлов */
-$id = (int) $_REQUEST['id'];
+$id = (int)$_REQUEST['id'];
 if ($id < 1 && $_REQUEST['action'] == 'edit') {
 	die('error');
 }
@@ -85,7 +91,7 @@ $loader->register();
 $main = new Main('components');
 
 if (Config::get('module.debug')) {
-	Debug::enabled(true);
+	// Debug::enabled(true);
 }
 
 // Подрубаем шаблонизатор
@@ -120,8 +126,8 @@ switch ($currentAction) {
 	case 'add':
 
 		// Добавление нового допполя
-		
-		$componentId = (isset($_REQUEST['componentid'])) ? (int) $_REQUEST['componentid'] : 0;
+
+		$componentId = (isset($_REQUEST['componentid'])) ? (int)$_REQUEST['componentid'] : 0;
 
 		// Получаем данные указанного компонента
 		$arComponent = $main->db->getRow('SELECT id, name FROM ?n WHERE id = ?i', PREFIX . '_components', $componentId);
@@ -137,6 +143,7 @@ switch ($currentAction) {
 		$arField = $_REQUEST;
 
 		if ($currentAction == 'edit') {
+			/** @var array $arSelectField */
 			$arSelectField = $main->db->getRow(
 				'SELECT * FROM ?n WHERE component_id = ?i AND id=?i',
 				PREFIX . '_components_fields_list',
@@ -160,7 +167,7 @@ switch ($currentAction) {
 			$arField['code'] = $arSelectField['code'];
 			$arField['type'] = $arSelectField['type'];
 		}
-		
+
 
 		// Получаем все типы полей, имеющиеся в БД.
 		$arFieldsTypes = $main->getFieldsTypes();
@@ -189,7 +196,7 @@ switch ($currentAction) {
 
 		// Запишем массив для передачи в шаблонизатор
 		Arr::set($arResult, 'arField', $arField);
-		
+
 		Arr::set($arResult, 'complete', false);
 
 		// Если ошибок нет — запишем даные в БД
@@ -212,12 +219,12 @@ switch ($currentAction) {
 				$editFieldQuery = 'UPDATE ?n SET name = ?s, description = ?s, is_required = ?s, is_multiple = ?s, default_value = ?p WHERE component_id = ?i AND id = ?i';
 
 				$main->db->query(
-					$editFieldQuery, 
-					PREFIX . '_components_fields_list', 
-					$arFieldData['name'], 
-					$arFieldData['description'], 
-					$arFieldData['is_required'], 
-					$arFieldData['is_multiple'], 
+					$editFieldQuery,
+					PREFIX . '_components_fields_list',
+					$arFieldData['name'],
+					$arFieldData['description'],
+					$arFieldData['is_required'],
+					$arFieldData['is_multiple'],
 					$arFieldData['default_value'],
 					$arFieldData['component_id'],
 					$arSelectField['id']
@@ -226,19 +233,19 @@ switch ($currentAction) {
 			} else {
 				$addFieldQuery = 'INSERT INTO ?n (component_id, type, name, code, description, is_required, is_multiple, default_value) values(?i, ?s, ?s, ?s, ?s, ?i, ?i, ?p)';
 				$main->db->query(
-					$addFieldQuery, 
-					PREFIX . '_components_fields_list', 
-					$arFieldData['component_id'], 
-					$arFieldData['type'], 
-					$arFieldData['name'], 
-					$arFieldData['code'], 
-					$arFieldData['description'], 
-					$arFieldData['is_required'], 
-					$arFieldData['is_multiple'], 
+					$addFieldQuery,
+					PREFIX . '_components_fields_list',
+					$arFieldData['component_id'],
+					$arFieldData['type'],
+					$arFieldData['name'],
+					$arFieldData['code'],
+					$arFieldData['description'],
+					$arFieldData['is_required'],
+					$arFieldData['is_multiple'],
 					$arFieldData['default_value']
 				);
 			}
-			
+
 
 			Arr::set($arResult, 'complete', true);
 		}

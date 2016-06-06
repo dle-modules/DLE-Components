@@ -37,23 +37,7 @@ $output = '';
 $main = new Main('components');
 
 if (Config::get('module.debug')) {
-
-	/**
-	 * Отладка в красивом виде
-	 *
-	 * @see http://raveren.github.io/kint/
-	 *
-	 * Использование
-	 * d($var);
-	 * !d($var);
-	 * ~d($var);
-	 * -d($var);
-	 * +d($var);
-	 * ddd($var);
-	 * s($var); // и те же параметры
-	 * sd($var);
-	 */
-	Debug::enabled(true);
+	// 
 }
 
 // Подрубаем шаблонизатор
@@ -274,7 +258,7 @@ switch ($currentPage) {
 		Arr::set($arResult, 'fieldsTypes', $main->getFieldsTypes());
 
 		break;
-	
+
 	case 'config':
 		Arr::set($arResult, 'arConfig', Config::get('module'));
 
