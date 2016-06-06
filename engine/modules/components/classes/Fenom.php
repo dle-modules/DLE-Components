@@ -18,7 +18,7 @@ use Fenom\Template;
  */
 class Fenom
 {
-    const VERSION = '2.8';
+    const VERSION = '2.9';
     const REV = 1;
     /* Actions */
     const INLINE_COMPILER = 1;
@@ -59,6 +59,7 @@ class Fenom
     const ACCESSOR_CALL     = 'Fenom\Accessor::parserCall';
     const ACCESSOR_PROPERTY = 'Fenom\Accessor::parserProperty';
     const ACCESSOR_METHOD   = 'Fenom\Accessor::parserMethod';
+    const ACCESSOR_CHAIN    = 'Fenom\Accessor::parserChain';
 
     public static $charset = "UTF-8";
 
@@ -166,6 +167,7 @@ class Fenom
         "esplit"      => 'Fenom\Modifier::esplit',
         "join"        => 'Fenom\Modifier::join',
         "in"          => 'Fenom\Modifier::in',
+        "range"       => 'Fenom\Modifier::range',
     );
 
     /**
@@ -270,6 +272,10 @@ class Fenom
             'open'  => 'Fenom\Compiler::setOpen',
             'close' => 'Fenom\Compiler::setClose'
         ),
+        'do'     => array( // {do ...}
+            'type'   => self::INLINE_COMPILER,
+            'parser' => 'Fenom\Compiler::tagDo'
+        ),
         'block'      => array( // {block ...} {parent} {/block}
             'type'       => self::BLOCK_COMPILER,
             'open'       => 'Fenom\Compiler::tagBlockOpen',
@@ -330,7 +336,11 @@ class Fenom
         'unset'  => array(
             'type'   => self::INLINE_COMPILER,
             'parser' => 'Fenom\Compiler::tagUnset'
-        )
+        ),
+        'paste'  => array( // {include ...}
+            'type'   => self::INLINE_COMPILER,
+            'parser' => 'Fenom\Compiler::tagPaste'
+        ),
     );
 
     /**
@@ -379,9 +389,11 @@ class Fenom
         'tpl'     => 'Fenom\Accessor::tpl',
         'version' => 'Fenom\Accessor::version',
         'const'   => 'Fenom\Accessor::constant',
-        'php'     => 'Fenom\Accessor::php',
+        'php'     => 'Fenom\Accessor::call',
+        'call'    => 'Fenom\Accessor::call',
         'tag'     => 'Fenom\Accessor::Tag',
-        'fetch'   => 'Fenom\Accessor::Fetch',
+        'fetch'   => 'Fenom\Accessor::fetch',
+        'block'   => 'Fenom\Accessor::block',
     );
 
     /**

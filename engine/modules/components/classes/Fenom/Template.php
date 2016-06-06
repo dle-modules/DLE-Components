@@ -314,12 +314,12 @@ class Template extends Render
     }
 
     /**
-     * Generate temporary internal template variable
+     * Generate name of temporary internal template variable (may be random)
      * @return string
      */
     public function tmpVar()
     {
-        return sprintf('$t%x_%x', $this->_crc, $this->i++);
+        return sprintf('$t%x_%x', $this->_crc ? $this->_crc : mt_rand(0, 0x7FFFFFFF), $this->i++);
     }
 
     /**
@@ -330,6 +330,7 @@ class Template extends Render
     private function _appendText($text)
     {
         $this->_line += substr_count($text, "\n");
+        $strip = $this->_options & Fenom::AUTO_STRIP;
         if ($this->_filters) {
             if (strpos($text, "<?") === false) {
                 foreach ($this->_filters as $filter) {
@@ -344,15 +345,14 @@ class Template extends Render
                         }
                     }
                 }
-                $text = implode('<?php echo "<?"; ?>', $fragments);
+                $text = implode('<?php echo "<?"; ?>' . ($strip ? '' : PHP_EOL), $fragments);
             }
         } else {
-            $text = str_replace("<?", '<?php echo "<?"; ?>' . PHP_EOL, $text);
+            $text = str_replace("<?", '<?php echo "<?"; ?>' . ($strip ? '' : PHP_EOL), $text);
         }
-        if($this->_options & Fenom::AUTO_STRIP) {
-
+        if($strip) {
             $text = preg_replace('/\s+/uS', ' ', str_replace(array("\r", "\n"), " ", $text));
-//            $text = preg_replace('/\s*([\pP\pS]+)\s*/uS', '$1', $text);
+            $text = str_replace("> <", "><", $text);
         }
         $this->_body .= $text;
     }
@@ -563,6 +563,8 @@ class Template extends Render
             throw new SecurityException($e->getMessage() . " in {$this->_name} line {$this->_line}, near '{" . $tokens->getSnippetAsString(0, 0) . "' <- there", 0, E_ERROR, $this->_name, $this->_line, $e);
         } catch (\Exception $e) {
             throw new CompileException($e->getMessage() . " in {$this->_name} line {$this->_line}, near '{" . $tokens->getSnippetAsString(0, 0) . "' <- there", 0, E_ERROR, $this->_name, $this->_line, $e);
+        } catch (\Throwable $e) {
+            throw new CompileException($e->getMessage() . " in {$this->_name} line {$this->_line}, near '{" . $tokens->getSnippetAsString(0, 0) . "' <- there", 0, E_ERROR, $this->_name, $this->_line, $e);
         }
     }
 
@@ -718,7 +720,7 @@ class Template extends Render
                     $exp[] = $this->parseIs($tokens, $item, $var);
                 } elseif ($operator == "in" || ($operator == "not" && $tokens->isNextToken("in"))) {
                     $item  = array_pop($exp);
-                    $exp[] = $this->parseIn($tokens, $item, $var);
+                    $exp[] = $this->parseIn($tokens, $item);
                 } else {
                     break;
                 }
@@ -785,7 +787,7 @@ class Template extends Render
         switch($tokens->key()) {
             case T_LNUMBER:
             case T_DNUMBER:
-                $code = $unary . $this->parseScalar($tokens, true);
+                $code = $unary . $this->parseScalar($tokens);
                 break;
             case T_CONSTANT_ENCAPSED_STRING:
             case '"':
@@ -793,7 +795,7 @@ class Template extends Render
                 if ($unary) {
                     throw new UnexpectedTokenException($tokens->back());
                 }
-                $code = $this->parseScalar($tokens, true);
+                $code = $this->parseScalar($tokens);
                 break;
             case '$':
                 $code = $this->parseAccessor($tokens, $is_var);
@@ -890,7 +892,7 @@ class Template extends Render
         }
         if(($allows & self::TERM_RANGE) && $tokens->is('.') && $tokens->isNext('.')) {
             $tokens->next()->next();
-            $code = 'range('.$code.', '.$this->parseTerm($tokens, $var, self::TERM_MODS).')';
+            $code = '(new \Fenom\RangeIterator('.$code.', '.$this->parseTerm($tokens, $var, self::TERM_MODS).'))';
             $is_var  = false;
         }
         return $code;
@@ -916,7 +918,7 @@ class Template extends Render
     }
 
     /**
-     * Parse variable name: $a, $a.b, $a.b['c']
+     * Parse variable name: $a, $a.b, $a.b['c'], $a:index
      * @param Tokenizer $tokens
      * @param $var
      * @return string
@@ -925,8 +927,19 @@ class Template extends Render
     public function parseVariable(Tokenizer $tokens, $var = null)
     {
         if (!$var) {
-            $var = '$var["' . substr($tokens->get(T_VARIABLE), 1) . '"]';
-            $tokens->next();
+            if($tokens->isNext('@')) {
+//                $v = $tokens->get(T_VARIABLE);
+                $prop = $tokens->next()->next()->get(T_STRING);
+                if($tag = $this->getParentScope("foreach")) {
+                    $tokens->next();
+                    return Compiler::foreachProp($tag, $prop);
+                } else {
+                    throw new UnexpectedTokenException($tokens);
+                }
+            } else {
+                $var = '$var["' . substr($tokens->get(T_VARIABLE), 1) . '"]';
+                $tokens->next();
+            }
         }
         while ($t = $tokens->key()) {
             if ($t === ".") {
@@ -1453,6 +1466,7 @@ class Template extends Render
             if (!$arg && $tokens->is(
                     T_VARIABLE,
                     T_STRING,
+                    "$",
                     "(",
                     Tokenizer::MACRO_SCALAR,
                     '"',
