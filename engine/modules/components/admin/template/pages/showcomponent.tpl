@@ -7,7 +7,7 @@
 			<div class="h3 m0">{$component.name} — Список элементов</div>
 		</div>
 		<div class="col col-mb-12 col-6 col-dt-4 ta-right">
-			<a href="{$home}&action=addelement&componentid={$component.id}" class="btn btn-small btn-primry btn-outline"><i class="icon-plus"></i> Добавить элемент</a>
+			<a href="{$home}&action=addelement&componentname={$component.name}" class="btn btn-small btn-primry btn-outline"><i class="icon-plus"></i> Добавить элемент</a>
 		</div>
 	</div>
 	<div class="content col-margin">

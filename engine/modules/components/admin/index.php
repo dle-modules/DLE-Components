@@ -121,8 +121,32 @@ switch ($currentPage) {
 
 		break;
 
-	case 'addcomponent':
+	case 'editelement':
+	case 'addelement':
+		$isEdit = false;
+		$componentName = (isset($_GET['componentname'])) ? trim($_GET['componentname']) : '';
+
+		// Массив для данных, отдаваемых в шаблон при отправке формы.
+		$arElementPost = [
+			'name'       => '',
+			'sort_index' => '',
+			'sort_index' => '500',
+			'image'      => '',
+			'text'       => '',
+			'error'      => false,
+			'errors'     => [],
+			'success'    => 0,
+		];
+
+		if ($componentName != '') {
+			$arComp = $main->getElementById($componentName, 1, '*', 'field1,field2');
+			echo "<pre class='dle-pre'>"; print_r($arComp); echo "</pre>";
+		}
+
+		break;
+	
 	case 'editcomponent':
+	case 'addcomponent':
 
 		$isEdit = false;
 
@@ -209,7 +233,7 @@ switch ($currentPage) {
 			if (!$arComponentPost['error']) {
 
 				if ($isEdit) {
-					// Формируем запрос на создание компонента
+					// Формируем запрос на обновление компонента
 					$editComponentQuery = 'UPDATE ?n SET sort_index = ?i, read_access = ?s, write_access = ?s, description = ?s WHERE id = ?i';
 					$main->db->query($editComponentQuery, PREFIX . '_components', $arComponentPost['sort_index'], $arComponentPost['read_access'], $arComponentPost['write_access'], $arComponentPost['description'], $arComponent['id']);
 
@@ -251,7 +275,7 @@ switch ($currentPage) {
 		Arr::set($arResult, 'component', $arComponent);
 
 		// Получаем информацию о плях, используемых компонентом.
-		Arr::set($arResult, 'fieldsList', $main->getFieldsList($arComponent['id']));
+		Arr::set($arResult, 'fieldsList', $main->getComponentFieldsList($arComponent['id']));
 
 		// Получаем все типы полей, имеющиеся в БД.
 		Arr::set($arResult, 'fieldsTypes', $main->getFieldsTypes());

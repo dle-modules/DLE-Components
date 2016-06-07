@@ -236,28 +236,156 @@ class Main {
 
 	}
 
+	/**
+	 * Gets the component elements.
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      string   $componentName  The component name
+	 * @param      integer  $currentPage    The current page
+	 * @param      integer  $perPage        The per page
+	 *
+	 * @return     array    The component elements.
+	 */
 	public function getComponentElements($componentName = '', $currentPage = 0, $perPage = 10) {
 		return $arList = $this->getList(PREFIX . '_component_' . $componentName, '*', [], $currentPage, $perPage, 'ASC', 'sort_index');
 	}
 
 	/**
+	 * Получаем данные о компоненте и его допполях по его имени
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      string  $componentName  Имя компонента
+	 * @param      string  $fields         Поля компонента
+	 * @param      string  $xfields        Дополнительные поля
+	 *
+	 * @return     array   Массив с данными о компоненте.
+	 */
+	public function getComponentByName($componentName = '', $fields = '*', $xfields = '*') {
+		$fields = $this->setFieldsFromString('', $fields);
+		$xfields = $this->setFieldsFromString('', $xfields);
+
+		$arComponent = $this->db->getRow('SELECT ?p FROM ?n WHERE name = ?s', $fields, PREFIX . '_components', $componentName);
+		$arComponentFields = [];
+
+		if ($xfields != '') {
+			$arComponentFields = $this->getComponentFieldsList($arComponent['id'], $xfields);
+
+		}
+
+		$arComponent['xfields'] = $arComponentFields;
+
+		
+		return $arComponent;
+	}
+
+	/**
+	 * Получаем данные об элементе по его ID
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      string   $componentName  Имя компонента
+	 * @param      integer  $elementId      ID элемента
+	 * @param      string   $fields         Поля
+	 * @param      string   $xfields        Допполя
+	 */
+	public function getElementById($componentName = '', $elementId = 0, $fields = '*', $xfields = '*') {
+		$fields = $this->setFieldsFromString('', $fields);
+		
+		$fieldsListId = '*';
+
+		$component = $this->getComponentByName($componentName, 'id', $xfields);
+		
+		$arElement = $this->db->getRow(
+			'SELECT ?p FROM ?n WHERE id = ?i', 
+			$fields, 
+			PREFIX . '_component_' . $componentName, 
+			$elementId
+		);
+		
+		if ($xfields != '*') {
+			$fieldsListIds = [];
+
+			foreach ($component['xfields'] as $field) {
+				$fieldsListIds[] = $field['id'];
+			}
+			if (count($fieldsListIds) > 0) {
+				$fieldsListId = implode(',', $fieldsListIds);
+			}
+		}
+
+		$elementXFields = $this->getElementFieldsList($component['id'], $elementId, $fieldsListId);
+
+		$arElement['xfields'] = $elementXFields;
+
+		return $arElement;
+
+	}
+
+	/**
 	 * Получаем список полей компонента
 	 *
-	 * @param  integer $componentId ID компонента.
+	 * @author     Павел Белоусов
 	 *
-	 * @return array                Поля компонента.
+	 * @param      integer  $componentId  ID компонента.
+	 * @param      string   $fields       Допполя
+	 *
+	 * @return     array    Поля компонента.
 	 */
-	public function getFieldsList($componentId = 0) {
+	public function getComponentFieldsList($componentId = 0, $fields = '*') {
+		$where = '';
+		if ($fields != '*') {
+			$fields = explode(',', $fields);
+			if (count($fields) > 0) {
+				$where = $this->db->parse(' AND f.code IN(?a) ', $fields);
+			}
+		}
+		
 		return $this->db->getAll(
-			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id=?i',
+			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id = ?i ?p',
 			PREFIX . '_components_fields_list',
 			PREFIX . '_components_fields_types',
-			$componentId
+			$componentId,
+			$where
 		);
 	}
 
+	/**
+	 * Gets the fields types.
+	 *
+	 * @return     array  The list of fields types.
+	 */
 	public function getFieldsTypes() {
 		return $this->db->getInd('type', 'SELECT * FROM ?n', PREFIX . '_components_fields_types');
+	}
+
+	/**
+	 * Получаем список допполей элемента
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      integer  $componentId   Идентификатор компонента
+	 * @param      integer  $elementId     ID Элемента
+	 * @param      string   $fieldsListId  ID полей
+	 *
+	 * @return     array   Список допполей элемента.
+	 */
+	public function getElementFieldsList($componentId = 0, $elementId = 0, $fieldsListId = '*') {
+		$where = '';
+
+		if ($fieldsListId != '*' || $fieldsListId != '') {
+			$fieldsListId = $this->getDiapazone($fieldsListId);
+
+			$where = ' AND field_list_id IN(' . $fieldsListId . ') ';
+		}
+		return $this->db->getAll(
+			'SELECT * FROM ?n WHERE component_id = ?i AND element_id = ?i ?p', 
+			PREFIX . '_components_fields_data', 
+			$componentId,
+			$elementId,
+			$where
+		);
 	}
 
 	/**
@@ -320,6 +448,13 @@ class Main {
 		}
 	}
 
+	/**
+	 * Функция для редирекста с сообщением
+	 *
+	 * @param      string   $page         The page
+	 * @param      string   $messageType  The message type
+	 * @param      boolean  $message      The message
+	 */
 	public function redirect($page = '/', $messageType = 'info', $message = false) {
 		if ($message) {
 			$_SESSION['message']      = $message;
@@ -330,6 +465,9 @@ class Main {
 		die('Redirect');
 	}
 
+	/**
+	 * Очистка данных от функции redirect
+	 */
 	public function clearMessage() {
 		unset($_SESSION['message'], $_SESSION['message_type']);
 	}
@@ -357,8 +495,8 @@ class Main {
 	 * @return string       Готовая строка для добавления в БД
 	 */
 	public function parseDefaulFieldValue($data = '', $type = '') {
-		if ((!isset($data) || empty($data) || $data == '')) {
-			return '';
+		if ((!isset($data) || empty($data) || trim($data) == '')) {
+			$strReturn = $this->db->parse('?s', $data);
 		}
 
 		if (is_array($data)) {
@@ -377,6 +515,79 @@ class Main {
 		}
 
 		return $strReturn;
+	}
+
+	/**
+	 * Sets the fields from string.
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      string  $fieldsPrefix  The fields prefix
+	 * @param      string  $strFields     The string fields
+	 * @param      string  $delimiter     The delimiter
+	 *
+	 * @return     string  
+	 */
+	public function setFieldsFromString($fieldsPrefix = '', $strFields = '', $delimiter = ',') {
+		$arFields = explode($delimiter, $strFields);
+		foreach ($arFields as &$field) {
+			$field = $fieldsPrefix . trim($field);
+		}
+
+		return implode(',', $arFields);
+	}
+
+	/**
+	 * Gets the diapazone.
+	 *
+	 * @author     Павел Белоусов
+	 *
+	 * @param      array|boolean  $diapazone  The diapazone
+	 *
+	 * @return     array|boolean  The diapazone.
+	 */
+	public function getDiapazone($diapazone = false) {
+		if ($diapazone !== false) {
+			$diapazone = str_replace(" ", "", $diapazone);
+
+			if (strpos($diapazone, ',') !== false) {
+				$diapazoneArray = explode(',', $diapazone);
+				$diapazoneArray = array_diff($diapazoneArray, [NULL]);
+
+				foreach ($diapazoneArray as $v) {
+					if (strpos($v, '-') !== false) {
+						preg_match("#(\d+)-(\d+)#i", $v, $test);
+
+						$diapazone = !empty($diapazone) && is_array($diapazone) ?
+							array_merge($diapazone, (!empty ($test) ? range($test[1], $test[2]) : []))
+							: (!empty ($test) ? range($test[1], $test[2]) : []);
+
+					} else {
+						$diapazone = !empty($diapazone) && is_array($diapazone) ?
+							array_merge($diapazone, (!empty ($v) ? [(int)$v] : []))
+							: (!empty ($v) ? [(int)$v] : []);
+					}
+				}
+
+			} elseif (strpos($diapazone, '-') !== false) {
+
+				preg_match("#(\d+)-(\d+)#i", $diapazone, $test);
+				$diapazone = !empty ($test) ? range($test[1], $test[2]) : [];
+
+			} else {
+				$diapazone = [(int)$diapazone];
+			}
+			if (!empty($diapazone)) {
+				$diapazone = array_unique($diapazone);
+			} else {
+				$diapazone = [];
+			}
+
+			$diapazone = implode(',', $diapazone);
+		}
+
+		return $diapazone;
+
 	}
 
 } // Main
