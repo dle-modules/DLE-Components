@@ -23,7 +23,7 @@
 						<b class="d-ib mr10">
 							#{$item.id}
 						</b>
-						<div class="fz18 d-ib text-primary"><a href="{$home}&action=showcomponent&id={$item.id}">{$item.name}</a> <small class="text-muted" title="Сортировка">({$item.sort_index})</small></div>
+						<div class="fz18 d-ib text-primary"><a href="{$home}&action=showelement&componentname={$component.name}&id={$item.id}">{$item.name}</a> <small class="text-muted" title="Сортировка">({$item.sort_index})</small></div>
 						{if $item.text}
 							<div>{$item.text}</div>
 						{/if}

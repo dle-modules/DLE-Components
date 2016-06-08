@@ -317,6 +317,8 @@ class Main {
 
 		$elementXFields = $this->getElementFieldsList($component['id'], $elementId, $fieldsListId);
 
+		$arElement['component_id'] = $component['id'];
+		$arElement['component_name'] = $component['name'];
 		$arElement['xfields'] = $elementXFields;
 
 		return $arElement;
@@ -374,7 +376,7 @@ class Main {
 	public function getElementFieldsList($componentId = 0, $elementId = 0, $fieldsListId = '*') {
 		$where = '';
 
-		if ($fieldsListId != '*' || $fieldsListId != '') {
+		if ($fieldsListId != '*') {
 			$fieldsListId = $this->getDiapazone($fieldsListId);
 
 			$where = ' AND field_list_id IN(' . $fieldsListId . ') ';

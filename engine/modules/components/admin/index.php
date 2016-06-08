@@ -91,7 +91,8 @@ $currentTemplate = '/pages/' . $currentPage;
 
 $isPost = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
-$componentId = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
+$componentId = $elementId = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
+$componentName = (isset($_GET['componentname'])) ? trim($_GET['componentname']) : '';
 
 switch ($currentPage) {
 	case 'componentslist':
@@ -121,10 +122,31 @@ switch ($currentPage) {
 
 		break;
 
+	case 'showelement':
+
+		if ($componentName != '' && $elementId > 0) {
+
+			$arElement = $main->getElementById($componentName, $elementId);
+
+			if (!$arElement['id']) {
+				$main->redirect(Arr::get($arResult, 'home') . '&action=componentslist', 'error', 'Элемент с кодом <b>' . $elementId . '</b> не найден');
+			}
+
+			Arr::set($arResult, 'element', $arElement);
+			$elementFields = $main->getElementFieldsList($arElement['component_id'], $arElement['id']);
+			Arr::set($arResult, 'element.all_xfields', $elementFields);
+
+		} else {
+			// Делаем редирект с сообщенем об ошибочной выборке
+			$main->redirect(Arr::get($arResult, 'home') . '&action=componentslist', 'error', 'Некорректно задан ID элемента или имя компонента');
+		}
+
+
+		break;
+
 	case 'editelement':
 	case 'addelement':
 		$isEdit = false;
-		$componentName = (isset($_GET['componentname'])) ? trim($_GET['componentname']) : '';
 
 		// Массив для данных, отдаваемых в шаблон при отправке формы.
 		$arElementPost = [
@@ -138,10 +160,7 @@ switch ($currentPage) {
 			'success'    => 0,
 		];
 
-		if ($componentName != '') {
-			$arComp = $main->getElementById($componentName, 1, '*', 'field1,field2');
-			echo "<pre class='dle-pre'>"; print_r($arComp); echo "</pre>";
-		}
+
 
 		break;
 	
