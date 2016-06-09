@@ -210,18 +210,20 @@ switch ($currentAction) {
 				'type'          => $arField['type'],
 				'name'          => $arField['name'],
 				'code'          => $arField['code'],
+				'sort_index'    => ((int)$arField['sort_index'] > 0) ? $arField['sort_index'] : '500',
 				'description'   => $arField['description'],
 				'is_required'   => (isset($arField['is_required'])) ? 1 : 0,
 				'is_multiple'   => (isset($arField['is_multiple'])) ? 1 : 0,
 				'default_value' => $defaultValue,
 			];
 			if ($currentAction == 'edit') {
-				$editFieldQuery = 'UPDATE ?n SET name = ?s, description = ?s, is_required = ?s, is_multiple = ?s, default_value = ?p WHERE component_id = ?i AND id = ?i';
+				$editFieldQuery = 'UPDATE ?n SET name = ?s, sort_index = ?i, description = ?s, is_required = ?s, is_multiple = ?s, default_value = ?p WHERE component_id = ?i AND id = ?i';
 
 				$main->db->query(
 					$editFieldQuery,
 					PREFIX . '_components_fields_list',
 					$arFieldData['name'],
+					$arFieldData['sort_index'],
 					$arFieldData['description'],
 					$arFieldData['is_required'],
 					$arFieldData['is_multiple'],
@@ -231,7 +233,7 @@ switch ($currentAction) {
 				);
 
 			} else {
-				$addFieldQuery = 'INSERT INTO ?n (component_id, type, name, code, description, is_required, is_multiple, default_value) values(?i, ?s, ?s, ?s, ?s, ?i, ?i, ?p)';
+				$addFieldQuery = 'INSERT INTO ?n (component_id, type, name, code, sort_index, description, is_required, is_multiple, default_value) values(?i, ?s, ?s, ?s, ?i, ?s, ?i, ?i, ?p)';
 				$main->db->query(
 					$addFieldQuery,
 					PREFIX . '_components_fields_list',
@@ -239,6 +241,7 @@ switch ($currentAction) {
 					$arFieldData['type'],
 					$arFieldData['name'],
 					$arFieldData['code'],
+					$arFieldData['sort_index'],
 					$arFieldData['description'],
 					$arFieldData['is_required'],
 					$arFieldData['is_multiple'],

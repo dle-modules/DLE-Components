@@ -345,7 +345,7 @@ class Main {
 		}
 		
 		return $this->db->getAll(
-			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id = ?i ?p',
+			'SELECT f.*, t.description as field_type_description FROM ?n f LEFT JOIN ?n t ON (f.type=t.type) WHERE component_id = ?i ?p ORDER BY sort_index ASC',
 			PREFIX . '_components_fields_list',
 			PREFIX . '_components_fields_types',
 			$componentId,

@@ -133,8 +133,7 @@ switch ($currentPage) {
 			}
 
 			Arr::set($arResult, 'element', $arElement);
-			$elementFields = $main->getElementFieldsList($arElement['component_id'], $arElement['id']);
-			Arr::set($arResult, 'element.all_xfields', $elementFields);
+
 
 		} else {
 			// Делаем редирект с сообщенем об ошибочной выборке
@@ -151,7 +150,6 @@ switch ($currentPage) {
 		// Массив для данных, отдаваемых в шаблон при отправке формы.
 		$arElementPost = [
 			'name'       => '',
-			'sort_index' => '',
 			'sort_index' => '500',
 			'image'      => '',
 			'text'       => '',

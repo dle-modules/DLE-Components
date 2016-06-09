@@ -84,7 +84,13 @@
 						</div>
 					</div>
 					<div class="content">
-						<div class="col col-mb-12">
+						<div class="col col-mb-12 col-4">
+							<div class="h4 mb0 text-primary">Индекс сортировки</div>
+							<div class="text-light"><small>Чем меньше число - тем выше поле в списке</small></div>
+							{set $sortIndex = $arField.sort_index || 500}
+							<input class="input input-block" type="number" name="sort_index" value="500">
+						</div>
+						<div class="col col-mb-12 col-8">
 							<div class="h4 mb0 text-primary">
 								Описание						
 							</div>

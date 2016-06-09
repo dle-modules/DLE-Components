@@ -42,7 +42,7 @@
 					</div>
 				{/if}
 				<div class="content">
-					<div class="col col-mb-12">
+					<div class="col col-mb-12 col-8">
 						<div class="equal">
 							<div class="h4 mb0 text-primary">
 								Название						
@@ -52,6 +52,11 @@
 							</div>
 						</div>
 						<input class="input input-block" type="text" name="name" value="{$arField.name}" required>
+					</div>
+					<div class="col col-mb-12 col-4">
+						<div class="h4 mb0 text-primary">Индекс сортировки</div>
+						<div class="text-light"><small>Чем меньше число - тем выше поле в списке</small></div>
+						<input class="input input-block" type="number" name="sort_index" value="{$arField.sort_index}">
 					</div>
 				</div>
 				<div class="content">
