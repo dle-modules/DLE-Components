@@ -67,6 +67,7 @@ $(document)
 				ajaxContentAdded: function () {
 					selecStyler($(this.content).find('.styler'));
 					$(this.content).find('.equal').matchHeight();
+					setPriceMask();				
 				}
 			}
 		});
@@ -128,27 +129,6 @@ $(document)
 $('.equal').matchHeight();
 
 
-$.simpleMobileNav({
-	navBlock: '.left-nav',
-	navContainer: '.mobile-nav',
-	navWrapper: '.mobile-nav-wrapper',
-	// Колбэки раскомментировать при необходимости
-	onInit: function (nav) {
-		var $ul = $(nav).find('.left-nav');
-
-		$ul.removeClass('left-nav');
-	},
-	// onNavToggle: function (nav) {
-	// 	console.log('onNavToggle: ', this, nav);
-	// },
-	// beforeNavOpen: function (nav) {
-	// console.log('beforeNavOpen: ', this, nav);
-	// },
-	// beforeNavClose: function (nav) {
-	// 	console.log('beforeNavClose: ', this, nav);
-	// }
-});
-
 // Стилизация селектов
 selecStyler($('.styler'));
 
@@ -162,12 +142,6 @@ $.extend(true, $.magnificPopup.defaults, {
 		tError: 'Контент не загружен.'
 	}
 });
-
-// Маска для цены
-$('.input-mask-price').mask('### ### ###.00', {
-	reverse: true
-});
-
 
 
 
@@ -198,6 +172,8 @@ function processDone(responseText, statusText, xhr, $form) {
 			if (statusText == 'success') {
 				$form.html(responseResult).find('.equal').matchHeight();;
 				selecStyler($form.find('.styler'));
+				setPriceMask();
+
 			}
 		}
 	}, 100);
@@ -210,5 +186,12 @@ function selecStyler(obj) {
 		onFormStyled: function () {
 			$('.jq-selectbox').addClass('opacity-one');
 		}
+	});
+}
+
+function setPriceMask() {
+	// Маска для цены
+	$('.input-mask-price').mask('### ### ###.00', {
+		reverse: true
 	});
 }

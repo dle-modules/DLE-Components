@@ -1,7 +1,6 @@
 {extends 'app.tpl'}
 
 {block 'content'}
-	{* <pre>{$arTplVars|dump}</pre> *}
 	<div class="content">
 		<div class="col col-mb-12 col-6">
 			<div class="h3 m0">Список компонентов</div>

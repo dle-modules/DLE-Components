@@ -29,7 +29,7 @@
 			<div class="container container-main">
 				<div class="content white-box">
 					<div class="col col-mb-12">
-						<div class="breadcrumb"><span class="item">{$config.module.moduleDecription} (v.{$config.module.version})</span></div>
+						<div class="breadcrumb"><span class="item">{$config.module.moduleDescription} (v.{$config.module.version})</span></div>
 						{if $.session.message!}
 							{include '/actions/alert.tpl' message=$.session.message type=$.session.message_type}
 						{/if}
@@ -40,16 +40,9 @@
 				</div> <!-- .content -->
 			</div> <!-- .container container-main -->
 		</div> <!-- .body-wrapper clearfix -->
-		<div class="mobile-nav-wrapper">
-			<div class="mobile-nav">
-				{* в этот блок подсоввывается мобиьная навигация *}
-			</div>
-		</div>
-
 		
 		<script src="{$theme}/assets/js/jquery.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.matchHeight-min.js"></script>
-		<script src="{$theme}/assets/js/jquery.mobileNav.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.formstyler.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.ladda.min.js"></script>
 		<script src="{$theme}/assets/js/jquery.magnificpopup.min.js"></script>

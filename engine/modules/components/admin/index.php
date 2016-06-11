@@ -91,7 +91,7 @@ $currentTemplate = '/pages/' . $currentPage;
 
 $isPost = ($_SERVER['REQUEST_METHOD'] == 'POST') ? true : false;
 
-$componentId = $elementId = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
+$componentId   = $elementId = (isset($_GET['id'])) ? (int)$_GET['id'] : 0;
 $componentName = (isset($_GET['componentname'])) ? trim($_GET['componentname']) : '';
 
 switch ($currentPage) {
@@ -159,9 +159,8 @@ switch ($currentPage) {
 		];
 
 
-
 		break;
-	
+
 	case 'editcomponent':
 	case 'addcomponent':
 

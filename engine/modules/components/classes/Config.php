@@ -11,7 +11,6 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-
 class Config {
 	/**
 	 * An instance of the Plugins class
@@ -30,23 +29,86 @@ class Config {
 	protected static $config = [];
 
 	/**
-	 * Protected clone method to enforce singleton behavior.
+	 * Constructor.
 	 *
 	 * @access  protected
-	 */
-	protected function __clone() {
-		// Nothing here.
-	}
-
-	/**
-	 * Constructor.
-	 * 
-	 * @access  protected
+	 *
 	 * @param string $moduleName Название модуля
 	 */
 	protected function __construct($moduleName = '') {
 		static::$config['dle']    = self::getDleConfig();
 		static::$config['module'] = self::getModuleConfig($moduleName);
+		static::$config['lang']   = self::getLang();
+	}
+
+	/**
+	 * Получение конфига DLE
+	 *
+	 * @author  Павел Белоуосв <pafnuty10@gmail.com>
+	 *
+	 *  <code>
+	 *      $config = Config::getDleConfig();
+	 *  </code>
+	 *
+	 * @access  public
+	 * @return array
+	 */
+	public static function getDleConfig() {
+
+		include ENGINE_DIR . '/data/config.php';
+
+		/** @var array $config */
+		return $config;
+	}
+
+	/**
+	 * Получение конфига модуля
+	 * Файл должен содержать переменную $componentsConfig = []
+	 *
+	 * @author  Павел Белоуосв <pafnuty10@gmail.com>
+	 *
+	 *  <code>
+	 *      $config = Config::getModuleConfig('mymodule');
+	 *  </code>
+	 *
+	 * @access  public
+	 *
+	 * @param  string $moduleName Название модуля
+	 *
+	 * @return array
+	 */
+	public static function getModuleConfig($moduleName = '') {
+		if ($moduleName !== '') {
+			include ENGINE_DIR . '/data/' . $moduleName . '.php';
+
+			/** @var array $componentsConfig */
+			return $componentsConfig;
+		}
+
+		return [];
+
+	}
+
+	/**
+	 * Получение языковых фраз модуля
+	 * Файл должен содержать переменную $componentsLang = []
+	 *
+	 * @author  Павел Белоуосв <pafnuty10@gmail.com>
+	 *
+	 *  <code>
+	 *      $config = Config::getLang();
+	 *  </code>
+	 *
+	 * @access  public
+	 * @return array
+	 */
+	public static function getLang() {
+
+		include ENGINE_DIR . '/modules/components/admin/lang/ru.php';
+
+		/** @var array $componentsLang */
+		return $componentsLang;
+
 	}
 
 	/**
@@ -57,6 +119,7 @@ class Config {
 	 *  </code>
 	 *
 	 * @access public
+	 *
 	 * @param string $key   Key
 	 * @param mixed  $value Value
 	 */
@@ -73,7 +136,9 @@ class Config {
 	 *  </code>
 	 *
 	 * @access  public
+	 *
 	 * @param  string $key Key
+	 *
 	 * @return mixed
 	 */
 	public static function get($key) {
@@ -95,47 +160,12 @@ class Config {
 	}
 
 	/**
-	 * Получение конфига DLE
+	 * @param  string $moduleName
 	 *
-	 * @author Павел Белоуосв <pafnuty10@gmail.com>
-	 *
-	 *  <code>
-	 *      $config = Config::getDleConfig();
-	 *  </code>
-	 *
-	 * @access  public
-	 * @return array
+	 * @return bool
 	 */
-	public static function getDleConfig() {
-
-		include ENGINE_DIR . '/data/config.php';
-
-		/** @var array $config */
-		return $config;
-	}
-
-	/**
-	 * Получение конфига модуля
-	 * Файл должен содержать переменную $mConfig = []
-	 *
-	 * @author Павел Белоуосв <pafnuty10@gmail.com>
-	 *
-	 *  <code>
-	 *      $config = Config::getModuleConfig('mymodule');
-	 *  </code>
-	 *
-	 * @access  public
-	 * @param  string $moduleName Название модуля
-	 * @return array
-	 */
-	public static function getModuleConfig($moduleName = '') {
-		if ($moduleName !== '') {
-			include ENGINE_DIR . '/data/' . $moduleName . '.php';
-			/** @var array $mConfig */
-			return $mConfig;
-		}
-		return [];
-
+	public static function init($moduleName = '') {
+		return !isset(self::$instance) and self::$instance = new Config($moduleName);
 	}
 
 	/**
@@ -148,11 +178,13 @@ class Config {
 	 *
 	 * @access  public
 	 */
+
 	/**
-	 * @param  string $moduleName [description]
-	 * @return [type]             [description]
+	 * Protected clone method to enforce singleton behavior.
+	 *
+	 * @access  protected
 	 */
-	public static function init($moduleName = '') {
-		return !isset(self::$instance) and self::$instance = new Config($moduleName);
+	protected function __clone() {
+		// Nothing here.
 	}
 }

@@ -81,6 +81,16 @@
 		background: @whiteFull;
 	}
 
+	.content-striped {
+		> .col {
+			padding-top: 15px;
+			padding-bottom: 15px;
+		}
+		&:nth-child(2n) {
+			background: fadeout(@gray, 80%);
+		}
+	}
+
 /* ==========================================================================
    EDITMENU */
 /* ========================================================================== */

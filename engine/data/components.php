@@ -4,9 +4,9 @@
  * @var array
  */
 
-$mConfig = [
+$componentsConfig = [
 	'moduleName' => 'DLE-Components',
-	'moduleDecription' => 'Компоненты для DLE',
+	'moduleDescription' => 'Компоненты для DLE',
 	'perPage' => 10,
 	'navStyle' => 'digg',
 	'version' => '1.0',

@@ -144,12 +144,7 @@ switch ($currentAction) {
 
 		if ($currentAction == 'edit') {
 			/** @var array $arSelectField */
-			$arSelectField = $main->db->getRow(
-				'SELECT * FROM ?n WHERE component_id = ?i AND id=?i',
-				PREFIX . '_components_fields_list',
-				$arComponent['id'],
-				$id
-			);
+			$arSelectField = $main->db->getRow('SELECT * FROM ?n WHERE component_id = ?i AND id=?i', PREFIX . '_components_fields_list', $arComponent['id'], $id);
 			switch ($arSelectField['type']) {
 				case 'LIST':
 				case 'CHK':
@@ -203,7 +198,7 @@ switch ($currentAction) {
 		if (isset($arField['complete']) && !Arr::get($arResult, 'error')) {
 
 
-			$defaultValue = $main->parseDefaulFieldValue($arField['default_value'], $arField['type']);
+			$defaultValue = $main->parseDefaultFieldValue($arField['default_value'], $arField['type']);
 
 			$arFieldData = [
 				'component_id'  => $arComponent['id'],
@@ -219,34 +214,11 @@ switch ($currentAction) {
 			if ($currentAction == 'edit') {
 				$editFieldQuery = 'UPDATE ?n SET name = ?s, sort_index = ?i, description = ?s, is_required = ?s, is_multiple = ?s, default_value = ?p WHERE component_id = ?i AND id = ?i';
 
-				$main->db->query(
-					$editFieldQuery,
-					PREFIX . '_components_fields_list',
-					$arFieldData['name'],
-					$arFieldData['sort_index'],
-					$arFieldData['description'],
-					$arFieldData['is_required'],
-					$arFieldData['is_multiple'],
-					$arFieldData['default_value'],
-					$arFieldData['component_id'],
-					$arSelectField['id']
-				);
+				$main->db->query($editFieldQuery, PREFIX . '_components_fields_list', $arFieldData['name'], $arFieldData['sort_index'], $arFieldData['description'], $arFieldData['is_required'], $arFieldData['is_multiple'], $arFieldData['default_value'], $arFieldData['component_id'], $arSelectField['id']);
 
 			} else {
 				$addFieldQuery = 'INSERT INTO ?n (component_id, type, name, code, sort_index, description, is_required, is_multiple, default_value) values(?i, ?s, ?s, ?s, ?i, ?s, ?i, ?i, ?p)';
-				$main->db->query(
-					$addFieldQuery,
-					PREFIX . '_components_fields_list',
-					$arFieldData['component_id'],
-					$arFieldData['type'],
-					$arFieldData['name'],
-					$arFieldData['code'],
-					$arFieldData['sort_index'],
-					$arFieldData['description'],
-					$arFieldData['is_required'],
-					$arFieldData['is_multiple'],
-					$arFieldData['default_value']
-				);
+				$main->db->query($addFieldQuery, PREFIX . '_components_fields_list', $arFieldData['component_id'], $arFieldData['type'], $arFieldData['name'], $arFieldData['code'], $arFieldData['sort_index'], $arFieldData['description'], $arFieldData['is_required'], $arFieldData['is_multiple'], $arFieldData['default_value']);
 			}
 
 

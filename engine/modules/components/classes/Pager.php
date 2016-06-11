@@ -104,6 +104,19 @@ class Pager {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function __toString() {
+		return $this->render();
+	}
+
+	/**
+	 * Magically converts Pagination object to string.
+	 *
+	 * @return  string  Pager html
+	 */
+
+	/**
 	 * Generates the HTML for the chosen pagination style.
 	 *
 	 * @return  string  pagination html
@@ -259,19 +272,20 @@ class Pager {
 				}
 
 				$out .= ' <span class="vertical">|</span> ' . str_replace([
-						':current_page',
-						':total_pages',
-					], [$this->current_page, $this->total_pages], $this->extended_pageof) .
-					' <span class="vertical">|</span> ' . str_replace([
-						':current_first_item',
-						':current_last_item',
-						':total_items',
-					], [
-						$this->current_first_item,
-						$this->current_last_item,
-						$this->total_items,
-					], $this->extended_itemsof) .
-					' <span class="vertical">|</span> ' . "\n";
+					                                                          ':current_page',
+					                                                          ':total_pages',
+				                                                          ], [
+					                                                          $this->current_page,
+					                                                          $this->total_pages,
+				                                                          ], $this->extended_pageof) . ' <span class="vertical">|</span> ' . str_replace([
+					                                                                                                                                         ':current_first_item',
+					                                                                                                                                         ':current_last_item',
+					                                                                                                                                         ':total_items',
+				                                                                                                                                         ], [
+					                                                                                                                                         $this->current_first_item,
+					                                                                                                                                         $this->current_last_item,
+					                                                                                                                                         $this->total_items,
+				                                                                                                                                         ], $this->extended_itemsof) . ' <span class="vertical">|</span> ' . "\n";
 
 				if ($this->next_page) {
 					$out .= str_replace(':link', str_replace('{page}', $this->next_page, $this->url), $this->next_tag) . "\n";
@@ -351,15 +365,18 @@ class Pager {
 	}
 
 	/**
-	 * Magically converts Pagination object to string.
+	 * Adds a secondary interface for accessing properties, e.g. $pager->total_pages().
+	 * Note that $pagination->total_pages is the recommended way to access properties.
 	 *
-	 * @return  string  Pager html
+	 * @param      $func
+	 * @param null $args
+	 *
+	 * @internal param \function $string name
+	 *
+	 * @return  string
 	 */
-	/**
-	 * @return string
-	 */
-	public function __toString() {
-		return $this->render();
+	public function __call($func, $args = null) {
+		return $this->__get($func);
 	}
 
 	/**
@@ -376,21 +393,6 @@ class Pager {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Adds a secondary interface for accessing properties, e.g. $pager->total_pages().
-	 * Note that $pagination->total_pages is the recommended way to access properties.
-	 *
-	 * @param      $func
-	 * @param null $args
-	 *
-	 * @internal param \function $string name
-	 *
-	 * @return  string
-	 */
-	public function __call($func, $args = null) {
-		return $this->__get($func);
 	}
 
 } // End Pager Class
