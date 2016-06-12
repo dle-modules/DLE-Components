@@ -23,7 +23,7 @@ $(document)
 		var $target = $($(this).data('clickTarget'));
 		if (e.type == 'touchend') {
 			doc.off('click', $target);
-		};
+		}
 		$target.trigger('click');
 	})
 	// Меню редактирования
@@ -65,9 +65,9 @@ $(document)
 			},
 			callbacks: {
 				ajaxContentAdded: function () {
-					selecStyler($(this.content).find('.styler'));
+					selectStyler($(this.content).find('.styler'));
 					$(this.content).find('.equal').matchHeight();
-					setPriceMask();				
+					setPriceMask();
 				}
 			}
 		});
@@ -95,20 +95,37 @@ $(document)
 	})
 	.on('click', '[data-add-list-field]', function (e) {
 		e.preventDefault();
-		var key = $(this).data('addListField'),
-			$field = $('<div class="content"><div class="col col-mb-12 col-4 col-dt-4"><input class="input input-block input-mask-latin" type="text" name="default_value[' + key + '][value]" placeholder="Значение" required></div><div class="col col-mb-12 col-5 col-dt-6"><input class="input input-block" type="text" name="default_value[' + key + '][label]" placeholder="Отображаемый текст"></div><div class="col col-mb-12 col-3 col-dt-2"><span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" data-remofe-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span></div><div class="col col-mb-12 col-mb-block col-hide col-dt-hide col-ld-hide"><hr ></div></div>');
+		var $this = $(this),
+			key = $this.data('addListField'),
+			$field = $('<div class="content"><div class="col col-mb-12 col-4 col-dt-4"><input class="input input-block input-mask-latin" type="text" name="default_value[' + key + '][value]" placeholder="Значение" required></div><div class="col col-mb-12 col-5 col-dt-6"><input class="input input-block" type="text" name="default_value[' + key + '][label]" placeholder="Отображаемый текст"></div><div class="col col-mb-12 col-3 col-dt-2"><span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" data-remove-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span></div><div class="col col-mb-12 col-mb-block col-hide col-dt-hide col-ld-hide"><hr ></div></div>');
 
-		$field.insertBefore($(this)).find('[name="default_value[' + key + '][value]"]').focus();
-		$(this).data('addListField', key + 1);
+		if ($this.data('addListTemplate')) {
+			var template = $('#' + $this.data('addListTemplate')).html();
+			$field = $((simpleJsTemplater(template, {key: key})));
+			$field.insertBefore($this).find('.focusme').focus();
+			setPriceMask();
+		} else {
+			$field.insertBefore($this).find('[name="default_value[' + key + '][value]"]').focus();
+		}
+
+		$this.data('addListField', key + 1);
 	})
-	.on('click', '[data-remofe-list-field]', function (e) {
+	.on('click', '[data-remove-list-field]', function (e) {
 		e.preventDefault();
 		$(this).closest('.content').remove();
 	})
 	.on('input', '.input-mask-latin', function () {
-		if (this.value.match(/[^a-zA-Z0-9_\s]/g)) {
-			this.value = this.value.replace(/[^a-zA-Z0-9_\s]/g, '_');
-		}
+		var start = this.selectionStart,
+			end = this.selectionEnd,
+			oldValueLength = this.value.length;
+
+		this.value = this.value.replace(/[^a-zA-Z0-9]/g, '');
+
+		var delta = oldValueLength - this.value.length;
+		start = start - delta;
+		end = end - delta;
+
+		this.setSelectionRange(start, end);
 	})
 	.on('click', '.btn-location-reload', function(event) {
 		event.preventDefault();
@@ -130,7 +147,9 @@ $('.equal').matchHeight();
 
 
 // Стилизация селектов
-selecStyler($('.styler'));
+selectStyler($('.styler'));
+
+setPriceMask();
 
 
 
@@ -170,8 +189,8 @@ function processDone(responseText, statusText, xhr, $form) {
 
 			// Тут что-то делаем с пришедшими данными
 			if (statusText == 'success') {
-				$form.html(responseResult).find('.equal').matchHeight();;
-				selecStyler($form.find('.styler'));
+				$form.html(responseResult).find('.equal').matchHeight();
+				selectStyler($form.find('.styler'));
 				setPriceMask();
 
 			}
@@ -179,7 +198,7 @@ function processDone(responseText, statusText, xhr, $form) {
 	}, 100);
 }
 
-function selecStyler(obj) {
+function selectStyler(obj) {
 	obj.styler({
 		selectSearch: true,
 		selectSearchLimit: 10,
@@ -194,4 +213,54 @@ function setPriceMask() {
 	$('.input-mask-price').mask('### ### ###.00', {
 		reverse: true
 	});
+}
+
+/**
+ * Простой js-шаблонизатор
+ * 
+ * Установка шаблона:
+ *  <template id="tpl">
+ *      <ul>
+ *          {% for(var i in this.items) { %}
+ *              <li>
+ *                  <b>{% this.items[i].name %}</b>
+ *              </li>
+ *          {% } %}
+ *      </ul>
+ *  </template>
+ * Использование: 
+ * var template = document.getElementById('tpl').innerHTML;
+ * var items = {0:{'name': 'one'}, 1: {'name': 'two'}};
+ * var show = (simpleJsTemplater(template, {
+				items: items
+			}));
+ * console.log(show);
+ */
+
+function simpleJsTemplater(html, options) {
+	'use strict';
+	var re = /\[%(.+?)%\]/g,
+		reExp = /(^( )?(var|if|for|else|switch|case|break|{|}|;))(.*)?/g,
+		code = 'with(obj) { var r=[];\n',
+		cursor = 0,
+		result,
+		match;
+	var add = function (line, js) {
+		js ? (code += line.match(reExp) ? line + '\n' : 'r.push(' + line + ');\n') :
+			(code += line !== '' ? 'r.push("' + line.replace(/"/g, '\\"') + '");\n' : '');
+		return add;
+	};
+	while (match = re.exec(html)) {
+		add(html.slice(cursor, match.index))(match[1], true);
+		cursor = match.index + match[0].length;
+	}
+	add(html.substr(cursor, html.length - cursor));
+	code = (code + 'return r.join(""); }').replace(/[\r\t\n]/g, '');
+	try {
+		result = new Function('obj', code).apply(options, [options]);
+	}
+	catch (err) {
+		console.error("'" + err.message + "'", " in \n\nCode:\n", code, "\n");
+	}
+	return result;
 }

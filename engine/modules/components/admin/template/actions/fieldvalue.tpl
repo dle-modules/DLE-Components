@@ -43,7 +43,7 @@
 					<input class="input input-block" type="text" name="default_value[{$key}][label]" value="{$value.label}" placeholder="Отображаемый текст">
 				</div>
 				<div class="col col-mb-12 col-3 col-dt-2">
-					<span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" {if $first}disabled{/if} data-remofe-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span>
+					<span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" {if $first}disabled{/if} data-remove-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span>
 				</div>
 				<div class="col col-mb-12 col-mb-block col-hide col-dt-hide col-ld-hide"><hr ></div>
 			</div>
@@ -58,8 +58,8 @@
 		<input class="input input-block" type="number" name="default_value" value="{$arField.default_value}" placeholder="Укажите ID новости">
 	
 	{case 'CID'}
-		<input class="input input-block" type="number" name="default_value[component]" value="{$arField.default_value}" placeholder="Укажите ID компонента">
-		<input class="input input-block" type="number" name="default_value[component]" value="{$arField.default_value}" placeholder="Укажите ID элемента">
+		<input class="input input-block" type="number" name="default_value[component]" value="{$arField.default_value.component}" placeholder="Укажите ID компонента">
+		<input class="input input-block" type="number" name="default_value[element]" value="{$arField.default_value.element}" placeholder="Укажите ID элемента">
 
 	{case 'IMG'}
 		{* <div class="tip fz14">

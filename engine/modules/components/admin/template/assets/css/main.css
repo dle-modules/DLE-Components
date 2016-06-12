@@ -2158,6 +2158,9 @@ select.input.multiple {
 .checkbox + label:hover > span {
   border-color: rgba(61, 75, 100, 0.5);
 }
+.checkbox + label + .checkbox + label {
+  margin-left: 20px;
+}
 .checkbox:checked + label > span {
   border-color: rgba(61, 75, 100, 0.5);
 }

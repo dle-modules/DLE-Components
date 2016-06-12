@@ -147,6 +147,9 @@ switch ($currentPage) {
 	case 'addelement':
 		$isEdit = false;
 
+		$component = $main->getComponentByName($componentName);
+
+
 		// Массив для данных, отдаваемых в шаблон при отправке формы.
 		$arElementPost = [
 			'name'       => '',
@@ -157,6 +160,8 @@ switch ($currentPage) {
 			'errors'     => [],
 			'success'    => 0,
 		];
+
+		Arr::set($arResult, 'component', $component);
 
 
 		break;
