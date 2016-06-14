@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/dle-modules/DLE-Components.png?label=ready&title=Ready)](https://waffle.io/dle-modules/DLE-Components)
 # DLE-Components
 Модуль компонентов для DLE
 
