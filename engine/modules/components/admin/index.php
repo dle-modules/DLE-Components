@@ -153,15 +153,85 @@ switch ($currentPage) {
 		// Массив для данных, отдаваемых в шаблон при отправке формы.
 		$arElementPost = [
 			'name'       => '',
+			'alt_name'       => '',
 			'sort_index' => '500',
 			'image'      => '',
 			'text'       => '',
+			'xfields'    => [],
 			'error'      => false,
 			'errors'     => [],
 			'success'    => 0,
 		];
 
+		if ($isPost) {
+			/** @var array $arElement */
+			$postName = ($isEdit) ? $arElement['name'] : '';
+
+			// Обрабатываем название элемента
+			$postName = trim($_POST['name']);
+
+			if (strlen($postName) == 0) {
+				$arElementPost['error']          = true;
+				$arElementPost['errors']['name'] = 'Не задано название элемента';
+			} else {
+				$arExistElement = $main->db->getOne('SELECT id FROM ?n WHERE name = ?s', PREFIX . '_component_' . $component['name'], $postName);
+				if ($arExistElement) {
+					$arElementPost['error']          = true;
+					$arElementPost['errors']['main'] = 'Элемент с таким именем уже существует';
+				}
+			}
+
+			$arElementPost['name'] = $postName;
+
+			if (isset($_POST['alt_name']) && strlen(trim($_POST['alt_name'])) > 0) {
+				$arElementPost['alt_name'] = $main->leffersFilter($_POST['alt_name']);
+			} else {
+				$arElementPost['alt_name'] = $main->slug($arElementPost['name']);
+			}
+
+			if (isset($_POST['sort_index']) && (int)$_POST['sort_index'] > 0) {
+				$arElementPost['sort_index'] = (int)$_POST['sort_index'];
+			}
+
+			if (isset($_POST['text']) && strlen(trim($_POST['text'])) > 0) {
+				$arElementPost['text'] = htmlspecialchars(strip_tags(trim($_POST['text'])));
+			}
+
+			if (!$arElementPost['error']) {
+
+				if ($isEdit) {
+					// Формируем запрос на обновление компонента
+					$editComponentQuery = 'UPDATE ?n SET sort_index = ?i, read_access = ?s, write_access = ?s, description = ?s WHERE id = ?i';
+					$main->db->query($editComponentQuery, PREFIX . '_components', $arElementPost['sort_index'], $arElementPost['read_access'], $arElementPost['write_access'], $arElementPost['description'], $arElement['id']);
+
+					// Очищаем кеш
+					clear_cache();
+
+					// Делаем редирект с сообщенем об успешном добавлении компонента
+					$main->redirect(Arr::get($arResult, 'home') . '&action=componentslist', 'success', 'Компонент <b>' . $arElement['name'] . '</b> успешно изменён.');
+				} else {
+					// Формируем запрос на создание компонента
+					$addElementQuery = 'INSERT INTO ?n (name, alt_name, sort_index, image, text, time_create, time_update) values(?s, ?s, ?i, ?s, ?s, ?s, ?s)';
+					$time_create = date('Y-m-d H:i:s');
+					$main->db->query($addElementQuery, PREFIX . '_component_' . $component['name'], $arElementPost['name'], $arElementPost['alt_name'], $arElementPost['sort_index'], $arElementPost['image'], $arElementPost['text'], $time_create, $time_create);
+
+	
+					// Очищаем кеш
+					clear_cache();
+
+					// Делаем редирект с сообщенем об успешном добавлении компонента
+					$main->redirect(Arr::get($arResult, 'home') . '&action=showcomponent&id=' .$component['id'], 'success', 'Элемент <b>' . $postName . '</b> успешно создан.');
+				}
+
+			}
+
+		}
+
+
 		Arr::set($arResult, 'component', $component);
+		Arr::set($arResult, 'element', $arElementPost);
+
+
 
 
 		break;
@@ -232,13 +302,13 @@ switch ($currentPage) {
 				$arComponentPost['error']          = true;
 				$arComponentPost['errors']['name'] = 'Не задано название компонента';
 			} else {
-				if (!$isPost) {
+				// if (!$isPost) {
 					$arExistComponent = $main->db->getOne('SELECT id FROM ?n WHERE name = ?s', PREFIX . '_components', $postName);
 					if ($arExistComponent) {
 						$arComponentPost['error']          = true;
 						$arComponentPost['errors']['main'] = 'Компонент с таким именем уже существует';
 					}
-				}
+				// }
 			}
 
 			$arComponentPost['name'] = $postName;
