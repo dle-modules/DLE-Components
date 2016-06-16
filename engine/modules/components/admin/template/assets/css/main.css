@@ -2130,6 +2130,9 @@ select.input.multiple {
 .input-block {
   width: 100%;
 }
+.input-error {
+  border-color: #f6511d;
+}
 .checkbox {
   position: absolute;
   left: -9999px;

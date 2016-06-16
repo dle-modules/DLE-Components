@@ -21,9 +21,9 @@
 		</div>
 	{/if}
 	<div class="col col-mb-12">
-		<pre>
-			{* {$component|dump} *}
-		</pre>
+		{* <pre>
+			{$.post|dump}
+		</pre> *}
 		<form  method="POST">
 			<div class="content">
 				<div class="col col-mb-12">

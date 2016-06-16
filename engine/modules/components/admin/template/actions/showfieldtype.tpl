@@ -1,5 +1,11 @@
 {set $required = $arField.is_required ? ' required ' : ''}
 
+{set $postData = $.post['xfields'][$arField.code]}
+
+<pre>
+	{$postData|dump}
+</pre>
+
 <div class="content content-striped">
 	<div class="col col-mb-12 col-5 col-dt-4 col-ld-3 text-light">
 
@@ -19,16 +25,22 @@
 		{/if}
 	</div>
 	<div class="col col-mb-12 col-7 col-dt-8 col-ld-9">
-		{if $arField.default_value is not array}
-			{set $arFieldDefaultValue = [$arField.default_value]}
+
+		{set $arNewFieldValues = $isPost ? $postData : $arField.default_value}
+
+		{if $arNewFieldValues is not array}
+			{set $arFieldValues = [$arNewFieldValues]}
+		{else}
+			{set $arFieldValues = $arNewFieldValues}
 		{/if}
+
 		{switch $arField.type}
 			{case 'TXT'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
-								<input class="input input-block" type="text" name="xfields[{$arField.code}][{$key}][value]" value="{$value}" data-daefult-value="{$arField.default_value}" placeholder="Значение" {$required}>
+								<input class="input input-block" type="text" name="xfields[{$arField.code}][{$key}]" value="{$value}" placeholder="Значение" {$required}>
 							</div>
 							<div class="col col-mb-12 col-3 col-dt-2">
 								<span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" {if $first}disabled{/if} data-remove-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span>
@@ -40,7 +52,7 @@
 					<template id="field_template_{$arField.code}">
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
-								<input class="input input-block focusme" type="text" name="xfields[{$arField.code}][[%this.key%]][value]" value="{$value}" data-daefult-value="{$arField.default_value}" placeholder="Значение" {$required}>
+								<input class="input input-block focusme" type="text" name="xfields[{$arField.code}][[%this.key%]]" value="{$arField.default_value}" placeholder="Значение" {$required}>
 							</div>
 							<div class="col col-mb-12 col-3 col-dt-2">
 								<span class="btn btn-secondary btn-outline btn-block fz14 pl0 pr0" {if $first}disabled{/if} data-remove-list-field title="Удалить текущее поле"><i class="icon-cross"></i> Удалить</span>
@@ -51,12 +63,15 @@
 
 					<a href="#" class="btn btn-outline mt10" data-add-list-field="{$arField.default_value|count}" data-add-list-template="field_template_{$arField.code}" title="Добавить ещё одно значение"><i class="icon-plus"></i> Добавить значение</a>
 				{else}
-					<input class="input input-block" type="text" name="xfields[{$arField.code}][value]" value="{$arField.default_value}" title="" {$required}>
+				<pre>
+					{$arFieldValues|dump}
+				</pre>
+					<input class="input input-block" type="text" name="xfields[{$arField.code}]" value="{$arFieldValues[0]}" title="" {$required}>
 				{/if}
 
 			{case 'NUM'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<input class="input input-block input-mask-price" type="text" name="xfields[{$arField.code}][{$key}][value]" value="{$value}" title="" placeholder="000.00" {$required}>
@@ -87,7 +102,7 @@
 			
 			{case 'TXTM'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<textarea class="input input-block focusme" name="xfields[{$arField.code}][{$key}][value]" title="" {$required}>{$value}</textarea>
@@ -119,7 +134,7 @@
 
 			{case 'INT'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<input class="input input-block" type="number" name="xfields[{$arField.code}][{$key}][value]" value="{$value}" title="" {$required}>
@@ -182,7 +197,7 @@
 
 			{case 'DATE'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<input class="input input-block" type="date" name="xfields[{$arField.code}][{$key}][value]" value="{$value}" title="" {$required} placeholder="дд.мм.гггг">
@@ -213,7 +228,7 @@
 			
 			{case 'NID'}
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<input class="input input-block" type="number" name="xfields[{$arField.code}][{$key}][value]" value="{$value}" title="" {$required} placeholder="Укажите ID новости">
@@ -245,7 +260,7 @@
 			{case 'CID'}
 
 				{if $arField.is_multiple}
-					{foreach $arFieldDefaultValue as $key => $value first = $first}
+					{foreach $arFieldValues as $key => $value first = $first}
 						<div class="content">
 							<div class="col col-mb-12 col-9 col-dt-10">
 								<div class="content">

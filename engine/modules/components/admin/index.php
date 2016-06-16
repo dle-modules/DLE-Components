@@ -200,17 +200,17 @@ switch ($currentPage) {
 			if (!$arElementPost['error']) {
 
 				if ($isEdit) {
-					// Формируем запрос на обновление компонента
+					// Формируем запрос на обновление элемента
 					$editComponentQuery = 'UPDATE ?n SET sort_index = ?i, read_access = ?s, write_access = ?s, description = ?s WHERE id = ?i';
 					$main->db->query($editComponentQuery, PREFIX . '_components', $arElementPost['sort_index'], $arElementPost['read_access'], $arElementPost['write_access'], $arElementPost['description'], $arElement['id']);
 
 					// Очищаем кеш
 					clear_cache();
 
-					// Делаем редирект с сообщенем об успешном добавлении компонента
+					// Делаем редирект с сообщенем об успешном добавлении элемента
 					$main->redirect(Arr::get($arResult, 'home') . '&action=componentslist', 'success', 'Компонент <b>' . $arElement['name'] . '</b> успешно изменён.');
 				} else {
-					// Формируем запрос на создание компонента
+					// Формируем запрос на создание элемента
 					$addElementQuery = 'INSERT INTO ?n (name, alt_name, sort_index, image, text, time_create, time_update) values(?s, ?s, ?i, ?s, ?s, ?s, ?s)';
 					$time_create = date('Y-m-d H:i:s');
 					$main->db->query($addElementQuery, PREFIX . '_component_' . $component['name'], $arElementPost['name'], $arElementPost['alt_name'], $arElementPost['sort_index'], $arElementPost['image'], $arElementPost['text'], $time_create, $time_create);
@@ -228,6 +228,7 @@ switch ($currentPage) {
 		}
 
 
+		Arr::set($arResult, 'isPost', $isPost);
 		Arr::set($arResult, 'component', $component);
 		Arr::set($arResult, 'element', $arElementPost);
 
