@@ -214,6 +214,31 @@ switch ($currentPage) {
 					$addElementQuery = 'INSERT INTO ?n (name, alt_name, sort_index, image, text, time_create, time_update) values(?s, ?s, ?i, ?s, ?s, ?s, ?s)';
 					$time_create = date('Y-m-d H:i:s');
 					$main->db->query($addElementQuery, PREFIX . '_component_' . $component['name'], $arElementPost['name'], $arElementPost['alt_name'], $arElementPost['sort_index'], $arElementPost['image'], $arElementPost['text'], $time_create, $time_create);
+					$newElementId = $main->db->insertId();
+					// echo "<pre class='dle-pre'>"; print_r($newElementId); echo "</pre>";
+					
+					
+					$postXFields = $_POST['xfields'];
+
+					foreach ($component['xfields'] as $key => $xfield) {
+						$xfieldData = $postXFields[$xfield['code']];
+						// echo "<pre class='dle-pre'>"; print_r($xfield); echo "</pre>";
+
+						if (!is_array($xfieldData)) {
+							$xfieldData = [$xfieldData];
+						}
+						
+						$xfAddQuery = 'INSERT INTO ?n (component_id, element_id, field_list_id, type, value) values(?i, ?i, ?i, ?s, ?s)';
+
+						// @TODO реализовать добавление в нужны тип поля
+						foreach ($xfieldData as $key => $xfval) {
+							$main->db->query($xfAddQuery, PREFIX . '_components_fields_data', $xfield['component_id'], $newElementId, $xfield['id'], $xfield['type'], $xfval);
+						}
+
+					}
+
+
+					
 
 	
 					// Очищаем кеш

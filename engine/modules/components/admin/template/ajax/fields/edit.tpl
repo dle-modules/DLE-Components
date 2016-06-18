@@ -91,10 +91,12 @@
 							<input class="checkbox" type="checkbox" id="ckbx_d_r" name="is_required" {if $arField.is_required}checked{/if}>
 							<label for="ckbx_d_r"><span></span> Обязательное</label>
 						</div>
-						<div>
-							<input class="checkbox" type="checkbox" id="ckbx_d_m" name="is_multiple" {if $arField.is_multiple}checked{/if}>
-							<label for="ckbx_d_m"><span></span> Множественное</label>
-						</div>
+						{if $arField.type not in list ['CHK', 'RAD']}
+							<div>
+								<input class="checkbox" type="checkbox" id="ckbx_d_m" name="is_multiple" {if $arField.is_multiple}checked{/if}>
+								<label for="ckbx_d_m"><span></span> Множественное</label>
+							</div>
+						{/if}
 					</div>
 				</div>
 			

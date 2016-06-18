@@ -139,6 +139,11 @@ $(document)
 		if (confirmDelete) {
 			$form.find('[name="action"]').val('delete').end().trigger('submit');
 		}
+	})
+	.on('submit', 'form', function(event) {
+		$.each($('.input-mask-price'), function() {
+			$(this).val($(this).cleanVal());
+		});
 	});
 
 
