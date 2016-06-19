@@ -1,59 +1,39 @@
-[![Stories in Ready](https://badge.waffle.io/dle-modules/DLE-Components.png?label=ready&title=Ready)](https://waffle.io/dle-modules/DLE-Components)
 # DLE-Components
-Модуль компонентов для DLE
 
-# Модуль в стадии  начальной разработки
+![version](https://img.shields.io/badge/version-dev-red.svg?style=flat-square "Version")
+![DLE](https://img.shields.io/badge/DLE-10.6+-green.svg?style=flat-square "DLE Version")
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://github.com/dle-modules/DLE-Components/blob/master/LICENSE)
 
-```sql
-CREATE TABLE `dle_components` (
-    `id` INT(6) NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(50) NOT NULL,
-    `sort_index` INT(6) NOT NULL DEFAULT '500',
-    `fields` TEXT NOT NULL,
-    `read_access` VARCHAR(200) NOT NULL,
-    `write_access` VARCHAR(200) NOT NULL,
-    `description` TEXT NOT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `sort_index` (`sort_index`)
-)
-COMMENT='Таблица для хранения компонентов'
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-;
+Модуль компонентов для DLE.
 
-CREATE TABLE `dle_components_fields_list` (
-    `id` TINYINT(3) NOT NULL AUTO_INCREMENT,
-    `component_id` INT(11) NOT NULL,
-    `type` CHAR(4) NOT NULL DEFAULT 'TXT',
-    `name` VARCHAR(50) NOT NULL,
-    `code` VARCHAR(50) NOT NULL,
-    `description` VARCHAR(255) NOT NULL,
-    `is_required` TINYINT(1) NOT NULL DEFAULT '0',
-    `is_multiple` TINYINT(1) NOT NULL DEFAULT '0',
-    `default_value` TEXT NULL,
-    PRIMARY KEY (`id`),
-    INDEX `component_id` (`component_id`),
-    INDEX `type` (`type`)
-)
-COMMENT='Таблица для хранения списка допполей компонентов'
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-;
+# :exclamation: Модуль в стадии  начальной разработки
 
-CREATE TABLE `dle_components_fields_types` (
-    `id` TINYINT(3) NOT NULL AUTO_INCREMENT,
-    `type` CHAR(4) NOT NULL,
-    `description` VARCHAR(255) NOT NULL,
-    UNIQUE INDEX `id` (`id`),
-    UNIQUE INDEX `type` (`type`)
-)
-COMMENT='Таблица для хранения типов допполей'
-COLLATE='utf8_general_ci'
-ENGINE=InnoDB
-;
+Модуль предназначен для реализации альтернативного способа вывода данных в DLE.
 
-INSERT INTO `dle_admin_sections` (`name`, `title`, `descr`, `icon`, `allow_groups`) VALUES
-    ('components', 'DLE-Components', 'Компоненты для DLE', 'components.png', '1');
-```
+Модуль делится на 3 основных сущности:
+
+### 1. Компонент
+Тут хранится информация о типе компонента, его описание. Типичные примеры компонентов: актёры, фильмы, товары, новости и т.п.
+
+### 2. Элемент
+Структурная единица компонента. У каждого элемента есть минимальный набор данных для вывода (название, описание, изображение). 
+
+### 3. Дополнительные поля
+Основное место хранения данных. На данный момент предполагается реализовать 12 типов дополнительных полей:
+1. Простое текстовое поле
+2. Многострочное тестовое поле
+3. Число
+4. Цена
+5. Файл *(пока не реализовано)*
+6. Список
+7. Чекбокс
+8. Радиокнопка
+9. Дата
+10. Привязка к новости
+11. Привязка к элементу компонента
+12. Картинка *(пока не реализовано)*
+
+Все поля, кроме чекбоксов и радиокнопок могут быть множественными.
+
 
 

@@ -153,7 +153,7 @@ switch ($currentPage) {
 		// Массив для данных, отдаваемых в шаблон при отправке формы.
 		$arElementPost = [
 			'name'       => '',
-			'alt_name'       => '',
+			'alt_name'   => '',
 			'sort_index' => '500',
 			'image'      => '',
 			'text'       => '',
@@ -212,12 +212,12 @@ switch ($currentPage) {
 				} else {
 					// Формируем запрос на создание элемента
 					$addElementQuery = 'INSERT INTO ?n (name, alt_name, sort_index, image, text, time_create, time_update) values(?s, ?s, ?i, ?s, ?s, ?s, ?s)';
-					$time_create = date('Y-m-d H:i:s');
+					$time_create     = date('Y-m-d H:i:s');
 					$main->db->query($addElementQuery, PREFIX . '_component_' . $component['name'], $arElementPost['name'], $arElementPost['alt_name'], $arElementPost['sort_index'], $arElementPost['image'], $arElementPost['text'], $time_create, $time_create);
 					$newElementId = $main->db->insertId();
 					// echo "<pre class='dle-pre'>"; print_r($newElementId); echo "</pre>";
-					
-					
+
+
 					$postXFields = $_POST['xfields'];
 
 					foreach ($component['xfields'] as $key => $xfield) {
@@ -227,7 +227,7 @@ switch ($currentPage) {
 						if (!is_array($xfieldData)) {
 							$xfieldData = [$xfieldData];
 						}
-						
+
 						$xfAddQuery = 'INSERT INTO ?n (component_id, element_id, field_list_id, type, value) values(?i, ?i, ?i, ?s, ?s)';
 
 						// @TODO реализовать добавление в нужны тип поля
@@ -238,14 +238,11 @@ switch ($currentPage) {
 					}
 
 
-					
-
-	
 					// Очищаем кеш
 					clear_cache();
 
 					// Делаем редирект с сообщенем об успешном добавлении компонента
-					$main->redirect(Arr::get($arResult, 'home') . '&action=showcomponent&id=' .$component['id'], 'success', 'Элемент <b>' . $postName . '</b> успешно создан.');
+					$main->redirect(Arr::get($arResult, 'home') . '&action=showcomponent&id=' . $component['id'], 'success', 'Элемент <b>' . $postName . '</b> успешно создан.');
 				}
 
 			}
@@ -256,8 +253,6 @@ switch ($currentPage) {
 		Arr::set($arResult, 'isPost', $isPost);
 		Arr::set($arResult, 'component', $component);
 		Arr::set($arResult, 'element', $arElementPost);
-
-
 
 
 		break;
@@ -329,11 +324,11 @@ switch ($currentPage) {
 				$arComponentPost['errors']['name'] = 'Не задано название компонента';
 			} else {
 				// if (!$isPost) {
-					$arExistComponent = $main->db->getOne('SELECT id FROM ?n WHERE name = ?s', PREFIX . '_components', $postName);
-					if ($arExistComponent) {
-						$arComponentPost['error']          = true;
-						$arComponentPost['errors']['main'] = 'Компонент с таким именем уже существует';
-					}
+				$arExistComponent = $main->db->getOne('SELECT id FROM ?n WHERE name = ?s', PREFIX . '_components', $postName);
+				if ($arExistComponent) {
+					$arComponentPost['error']          = true;
+					$arComponentPost['errors']['main'] = 'Компонент с таким именем уже существует';
+				}
 				// }
 			}
 

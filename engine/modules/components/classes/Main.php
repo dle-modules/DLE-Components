@@ -312,7 +312,7 @@ class Main {
 		}
 
 		$elementXFields = $this->getElementFieldsList($component['id'], $elementId, $fieldsListId);
-		
+
 		$arElementXFields = [];
 
 		foreach ($elementXFields as $field) {
@@ -330,7 +330,7 @@ class Main {
 			$arElementXFields[$field['type']]['default_value']          = $componentField['default_value'];
 			$arElementXFields[$field['type']]['field_type_description'] = $componentField['field_type_description'];
 
-			$arElementXFields[$field['type']]['field_data'][] = $field;
+			$arElementXFields[$field['type']]['field_data'][]    = $field;
 			$arElementXFields[$field['type']]['display_value'][] = $this->setFieldDisplayValue($field);
 
 		}
@@ -428,7 +428,7 @@ class Main {
 	 * @return     array   Список допполей элемента.
 	 */
 	public function getElementFieldsList($componentId = 0, $elementId = 0, $fieldsListId = '*') {
-		$where = '';
+		$where          = '';
 		$elemetnXfields = [];
 
 		// Получаем диапазон ID типов допполей
@@ -522,14 +522,14 @@ class Main {
 
 			// case 'TXT':
 			case 'INT':
-			// case 'FILE':
-			// case 'LIST':
-			// case 'CHK':
-			// case 'RAD':
-			// case 'DATE':	
+				// case 'FILE':
+				// case 'LIST':
+				// case 'CHK':
+				// case 'RAD':
+				// case 'DATE':	
 			case 'NID':
 			case 'CID':
-			// case 'IMG':
+				// case 'IMG':
 
 				$displayValue = $field['value_int'];
 				break;
