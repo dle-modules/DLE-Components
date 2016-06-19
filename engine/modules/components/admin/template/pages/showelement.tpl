@@ -1,7 +1,7 @@
 {extends 'app.tpl'}
 
 {block 'content'}
-	<div class="content">
+	<div class="content col-margin-bottom">
 		<div class="col col-mb-12 col-6 col-dt-8">
 			<div class="h3 m0">{$element.name}</div>
 		</div>
@@ -97,7 +97,8 @@
 			<h3 class="m0">{$config.lang.element.xfields}</h3>
 		</div>
 	</div>
-	{foreach $element.xfields as $xfield}
+
+	{foreach $element.xfields as $xfKey => $xfield}
 		<div class="content content-striped">
 			<div class="col col-mb-12 col-5 col-dt-4 col-ld-3 text-light">
 
@@ -115,9 +116,35 @@
 			</div>
 			<div class="col col-mb-12 col-7 col-dt-8 col-ld-9">
 				<div class="text-light">
-					{$config.lang.xfield.value}:
+					{if $xfield.display_value|count > 1}
+						{$config.lang.xfield.values} ({$xfield.display_value|count}):
+					{else}
+						{$config.lang.xfield.value}:
+					{/if}
 				</div>
-				{$xfield.display_value}	
+				{if $xfKey in list ['CHK', 'RAD', 'LIST']}
+					{set $listVals = $xfield.default_value|json_decode:'true'}
+					{set $selectedVals = $xfield.display_value}
+					{set $xfield.display_value = []}
+					{foreach $listVals as $listval}
+						{if $listval.value in list $selectedVals}
+							{set $displayVal = ($listval.label) ? $listval.label : $listval.value}
+							{set $xfield.display_value[] = $displayVal}
+						{/if}
+					{/foreach}
+				{/if}
+				{if $xfield.display_value|count > 1}
+					<ul class="unstyled">
+						{foreach $xfield.display_value as $key => $xfValue}
+							<li class="xfield-value xfield-type-{$xfield.type|lower}">
+								{$xfValue}
+							</li>
+						{/foreach}
+					</ul>
+				{else}
+					{$xfield.display_value[0]}
+				{/if}
+				
 			</div>
 		</div>
 

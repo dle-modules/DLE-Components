@@ -312,27 +312,32 @@ class Main {
 		}
 
 		$elementXFields = $this->getElementFieldsList($component['id'], $elementId, $fieldsListId);
+		
+		$arElementXFields = [];
 
-		foreach ($elementXFields as &$field) {
+		foreach ($elementXFields as $field) {
 			$componentField = $component['xfields'][$field['field_list_id']];
 
-			$field['display_value'] = $this->setFieldDisplayValue($field);
+			$arElementXFields[$field['type']]['component_id']           = $componentField['component_id'];
+			$arElementXFields[$field['type']]['field_list_id']          = $componentField['id'];
+			$arElementXFields[$field['type']]['name']                   = $componentField['name'];
+			$arElementXFields[$field['type']]['type']                   = $componentField['type'];
+			$arElementXFields[$field['type']]['code']                   = $componentField['code'];
+			$arElementXFields[$field['type']]['sort_index']             = $componentField['sort_index'];
+			$arElementXFields[$field['type']]['description']            = $componentField['description'];
+			$arElementXFields[$field['type']]['is_required']            = $componentField['is_required'];
+			$arElementXFields[$field['type']]['is_multiple']            = $componentField['is_multiple'];
+			$arElementXFields[$field['type']]['default_value']          = $componentField['default_value'];
+			$arElementXFields[$field['type']]['field_type_description'] = $componentField['field_type_description'];
 
-			$field['name']                   = $componentField['name'];
-			$field['code']                   = $componentField['code'];
-			$field['sort_index']             = $componentField['sort_index'];
-			$field['description']            = $componentField['description'];
-			$field['is_required']            = $componentField['is_required'];
-			$field['is_multiple']            = $componentField['is_multiple'];
-			$field['default_value']          = $componentField['default_value'];
-			$field['field_type_description'] = $componentField['field_type_description'];
-
+			$arElementXFields[$field['type']]['field_data'][] = $field;
+			$arElementXFields[$field['type']]['display_value'][] = $this->setFieldDisplayValue($field);
 
 		}
 
 		$arElement['component_id']   = $component['id'];
 		$arElement['component_name'] = $component['name'];
-		$arElement['xfields']        = $elementXFields;
+		$arElement['xfields']        = $arElementXFields;
 
 		unset($fieldTypes, $elementXFields, $component);
 
@@ -424,14 +429,20 @@ class Main {
 	 */
 	public function getElementFieldsList($componentId = 0, $elementId = 0, $fieldsListId = '*') {
 		$where = '';
+		$elemetnXfields = [];
 
+		// Получаем диапазон ID типов допполей
 		if ($fieldsListId != '*') {
 			$fieldsListId = $this->getDiapazone($fieldsListId);
 
 			$where = ' AND field_list_id IN(' . $fieldsListId . ') ';
 		}
 
-		return $this->db->getAll('SELECT * FROM ?n WHERE component_id = ?i AND element_id = ?i ?p', PREFIX . '_components_fields_data', $componentId, $elementId, $where);
+		// Получаем допполя
+		$xfields = $this->db->getAll('SELECT * FROM ?n WHERE component_id = ?i AND element_id = ?i ?p', PREFIX . '_components_fields_data', $componentId, $elementId, $where);
+
+
+		return $xfields;
 	}
 
 	/**
@@ -503,18 +514,22 @@ class Main {
 		if (!is_array($field)) {
 			return $displayValue;
 		}
-		switch ($field['tupe']) {
-			// case 'TXTM':
+
+		switch ($field['type']) {
+			case 'TXTM':
+				$displayValue = str_replace("\n", '<br>', $field['value']);
+				break;
+
 			// case 'TXT':
 			case 'INT':
-				// case 'FILE':
-				// case 'LIST':
-			case 'CHK':
-			case 'RAD':
-				// case 'DATE':
+			// case 'FILE':
+			// case 'LIST':
+			// case 'CHK':
+			// case 'RAD':
+			// case 'DATE':	
 			case 'NID':
 			case 'CID':
-				// case 'IMG':
+			// case 'IMG':
 
 				$displayValue = $field['value_int'];
 				break;

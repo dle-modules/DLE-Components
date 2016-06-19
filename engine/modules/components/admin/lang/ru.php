@@ -29,6 +29,7 @@ $componentsLang = [
 		'field_list_id' => 'ID типа',
 		'type' => 'Тип',
 		'value' => 'Значение',
+		'values' => 'Значения',
 		'name' => 'Название',
 		'code' => 'Код',
 		'sort_index' => 'Индекс сортировки',
